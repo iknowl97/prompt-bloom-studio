@@ -26,7 +26,7 @@ export function Hero() {
         </h1>
         
         <p className="mx-auto max-w-2xl text-lg md:text-xl text-[#8E9196] mb-8">
-          Generate powerful, effective prompts for any AI model with our intelligent prompt engineering assistant.
+          Generate powerful, effective prompts for any AI model with our intelligent AiKnowledge assistant.
         </p>
         
         <div className="flex flex-wrap justify-center gap-4 mb-10">
@@ -47,3 +47,4 @@ export function Hero() {
     </div>
   );
 }
+

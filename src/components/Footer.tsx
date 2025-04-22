@@ -8,7 +8,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
             <p className="text-[#8E9196] text-sm">
-              © {new Date().getFullYear()} PromptBloom. All rights reserved.
+              © {new Date().getFullYear()} AiKnowledge. All rights reserved.
             </p>
           </div>
           
@@ -22,7 +22,7 @@ export function Footer() {
             <div className="flex items-center text-[#8E9196] text-sm">
               <span>Made with</span>
               <Heart className="h-4 w-4 mx-1 text-white/80" />
-              <span>by Lovable</span>
+              <span>by AiKnowledge</span>
             </div>
           </div>
         </div>
@@ -30,3 +30,4 @@ export function Footer() {
     </footer>
   );
 }
+

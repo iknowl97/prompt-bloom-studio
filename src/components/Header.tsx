@@ -8,7 +8,7 @@ export function Header() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Sparkles className="h-8 w-8 text-white/90 animate-pulse-soft" />
-            <h1 className="text-2xl md:text-3xl font-bold text-white">PromptBloom</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-white">AiKnowledge</h1>
           </div>
           <div className="hidden md:flex items-center space-x-4">
             <a href="#" className="text-[#8E9196] hover:text-white transition-colors">Examples</a>
@@ -20,3 +20,4 @@ export function Header() {
     </div>
   );
 }
+
