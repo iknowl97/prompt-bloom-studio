@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { PromptForm } from "@/components/PromptForm";
@@ -7,39 +6,15 @@ import { PromptResult } from "@/components/PromptResult";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { GalleryHorizontal, Settings, Key } from "lucide-react";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription,
-  DialogFooter
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { GalleryHorizontal } from "lucide-react";
 
 const Index = () => {
   const [promptData, setPromptData] = useState<{
     prompt: string;
     settings: {
-      temperature: number;
-      modelType: string;
       generatedPrompt?: string;
     };
   } | null>(null);
-  
-  const [apiKey, setApiKey] = useState(() => {
-    // Get API key from localStorage
-    return localStorage.getItem("aiknowledge_openrouter_key") || "";
-  });
-  
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  
-  // Save API key to localStorage when it changes
-  useEffect(() => {
-    localStorage.setItem("aiknowledge_openrouter_key", apiKey);
-  }, [apiKey]);
 
   const handleGenerate = (prompt: string, settings: any) => {
     setPromptData({ prompt, settings });
@@ -63,26 +38,15 @@ const Index = () => {
                 </p>
               </div>
               
-              <div className="flex space-x-2">
-                <Button 
-                  variant="outline" 
-                  className="flex items-center border-gray-300 text-gray-700"
-                  onClick={() => setIsSettingsOpen(true)}
-                >
-                  <Settings className="mr-2 h-4 w-4" />
-                  API Key
+              <Link to="/gallery">
+                <Button variant="outline" className="flex items-center border-gray-300 text-gray-700">
+                  <GalleryHorizontal className="mr-2 h-4 w-4" />
+                  Gallery
                 </Button>
-                
-                <Link to="/gallery">
-                  <Button variant="outline" className="flex items-center border-gray-300 text-gray-700">
-                    <GalleryHorizontal className="mr-2 h-4 w-4" />
-                    Gallery
-                  </Button>
-                </Link>
-              </div>
+              </Link>
             </div>
             
-            <PromptForm onGenerate={handleGenerate} apiKey={apiKey} />
+            <PromptForm onGenerate={handleGenerate} />
             
             {promptData && promptData.settings.generatedPrompt && (
               <div className="mt-10 animate-fade-in">
@@ -132,44 +96,6 @@ const Index = () => {
           </div>
         </div>
       </main>
-      
-      <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-        <DialogContent className="bg-white">
-          <DialogHeader>
-            <DialogTitle>OpenRouter API Settings</DialogTitle>
-            <DialogDescription>
-              Enter your OpenRouter API key to enable prompt generation.
-              You can get an API key from <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" className="text-gray-900 underline">openrouter.ai/keys</a>.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="api-key" className="text-gray-900">API Key</Label>
-              <Input
-                id="api-key"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Enter your OpenRouter API key"
-                className="border-gray-300 text-gray-900"
-              />
-              <p className="text-xs text-gray-500">
-                Your API key is stored locally and never sent to our servers.
-                For development, this will work with localhost.
-              </p>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button 
-              onClick={() => setIsSettingsOpen(false)}
-              className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 text-white"
-            >
-              Save Changes
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
       
       <Footer />
     </div>
