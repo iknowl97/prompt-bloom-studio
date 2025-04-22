@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { FileJson, FileText, FileXml } from "lucide-react";
+import { FileJson, FileText, FileCode } from "lucide-react";
 
 interface PromptResultProps {
   prompt: string;
@@ -25,14 +24,12 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
   const [isFavorited, setIsFavorited] = useState(false);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   
-  // Example generated prompts based on different inputs
   const exampleResults = [
     "Create a detailed fantasy world with unique magical systems, diverse cultures, and an ancient conflict that threatens to resurface. Describe the geography, major factions, and a central mystery that drives the narrative.",
     "Write a prompt for generating a compelling sci-fi story set on a distant planet where humans have established colonies but must contend with mysterious indigenous life forms that communicate through shared dreams.",
     "Craft a prompt that will generate an emotional character study of someone experiencing a major life transition, including their internal struggles, key relationships, and how their perspective evolves over time."
   ];
   
-  // Pseudo-random but deterministic choice based on the input prompt
   const hashCode = (str: string) => {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -187,7 +184,7 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
                   <FileText className="mr-2 h-4 w-4" /> Markdown Format
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => downloadPrompt("xml")}>
-                  <FileXml className="mr-2 h-4 w-4" /> XML Format
+                  <FileCode className="mr-2 h-4 w-4" /> XML Format
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

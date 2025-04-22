@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { usePrompts, SavedPrompt, PromptFolder } from "@/contexts/PromptContext";
 import { 
@@ -14,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { 
   Save, BookmarkPlus, FolderPlus, Download, 
-  MoreVertical, Trash, Edit, FileJson, FileText, FileXml,
+  MoreVertical, Trash, Edit, FileJson, FileText, FileCode,
   GalleryHorizontal, GalleryVertical, Bookmark, Info
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -302,7 +301,7 @@ export default function PromptGallery() {
                                 Download as Markdown
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => downloadPrompt(prompt, "xml")}>
-                                <FileXml className="h-4 w-4 mr-2" />
+                                <FileCode className="h-4 w-4 mr-2" />
                                 Download as XML
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -362,7 +361,7 @@ export default function PromptGallery() {
                                 Download as Markdown
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => downloadPrompt(prompt, "xml")}>
-                                <FileXml className="h-4 w-4 mr-2" />
+                                <FileCode className="h-4 w-4 mr-2" />
                                 Download as XML
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -500,7 +499,7 @@ export default function PromptGallery() {
                       Download as Markdown
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => downloadPrompt(selectedPrompt, "xml")}>
-                      <FileXml className="h-4 w-4 mr-2" />
+                      <FileCode className="h-4 w-4 mr-2" />
                       Download as XML
                     </DropdownMenuItem>
                   </DropdownMenuContent>
