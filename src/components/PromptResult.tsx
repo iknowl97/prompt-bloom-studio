@@ -25,25 +25,8 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
   const [isFavorited, setIsFavorited] = useState(false);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   
-  const exampleResults = [
-    "Create a detailed fantasy world with unique magical systems, diverse cultures, and an ancient conflict that threatens to resurface. Describe the geography, major factions, and a central mystery that drives the narrative.",
-    "Write a prompt for generating a compelling sci-fi story set on a distant planet where humans have established colonies but must contend with mysterious indigenous life forms that communicate through shared dreams.",
-    "Craft a prompt that will generate an emotional character study of someone experiencing a major life transition, including their internal struggles, key relationships, and how their perspective evolves over time."
-  ];
-  
-  const hashCode = (str: string) => {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = ((hash << 5) - hash) + str.charCodeAt(i);
-      hash |= 0;
-    }
-    return Math.abs(hash);
-  };
-  
-  const generatedPrompt = exampleResults[hashCode(prompt) % exampleResults.length];
-  
   const handleCopy = () => {
-    navigator.clipboard.writeText(generatedPrompt);
+    navigator.clipboard.writeText(prompt);
     setIsCopied(true);
     toast({
       title: "Copied to clipboard",
@@ -75,18 +58,18 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
     if (format === "json") {
       content = JSON.stringify({
         title,
-        content: generatedPrompt,
+        content: prompt,
         settings,
         createdAt: new Date().toISOString(),
       }, null, 2);
       mimeType = "application/json";
       fileExtension = "json";
     } else if (format === "md") {
-      content = `# ${title}\n\n${generatedPrompt}\n\n## Settings\n\n- Model: ${settings.modelType}\n- Temperature: ${settings.temperature}\n\n## Created\n\n${new Date().toLocaleString()}`;
+      content = `# ${title}\n\n${prompt}\n\n## Settings\n\n- Model: ${settings.modelType}\n- Temperature: ${settings.temperature}\n\n## Created\n\n${new Date().toLocaleString()}`;
       mimeType = "text/markdown";
       fileExtension = "md";
     } else if (format === "xml") {
-      content = `<prompt>\n  <title>${title}</title>\n  <content>${generatedPrompt}</content>\n  <settings>\n    <model>${settings.modelType}</model>\n    <temperature>${settings.temperature}</temperature>\n  </settings>\n  <createdAt>${new Date().toISOString()}</createdAt>\n</prompt>`;
+      content = `<prompt>\n  <title>${title}</title>\n  <content>${prompt}</content>\n  <settings>\n    <model>${settings.modelType}</model>\n    <temperature>${settings.temperature}</temperature>\n  </settings>\n  <createdAt>${new Date().toISOString()}</createdAt>\n</prompt>`;
       mimeType = "application/xml";
       fileExtension = "xml";
     }
@@ -107,8 +90,28 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
     });
   };
 
+  // Map model names to their respective icons
+  const getModelIcon = () => {
+    switch (settings.modelType) {
+      case "gpt-4.5-preview":
+      case "anthropic/claude-3-opus:free":
+        return <img src="https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6317aebb83d8d2fd903192d9/STU-lwrfXUVDQXZf3c45l.jpeg" alt="Claude Icon" className="h-5 w-5 mr-2" />;
+      case "gpt-4o":
+      case "openai/gpt-4o:free":
+        return <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1024px-ChatGPT_logo.svg.png" alt="GPT-4o Icon" className="h-5 w-5 mr-2" />;
+      case "gemini-pro":
+      case "google/gemini-2.5-pro-exp-03-25:free":
+        return <img src="https://www.gstatic.com/lamda/images/gemini_sparkle_v002_advanced_9b19b6f5ef3bd3c6f2ab5318c5db21bc.svg" alt="Gemini Icon" className="h-5 w-5 mr-2" />;
+      case "llama3-70b":
+      case "meta/llama-3-70b-instruct:free":
+        return <img src="https://scontent.fsof10-1.fna.fbcdn.net/v/t39.30808-6/431213095_402960668997258_8578409586953646722_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=efb6e6&_nc_ohc=j5CmlFvpEu0AX-qHztz&_nc_oc=AQkT-LZq0zUvLdHNHktMGcPP-7LtB9Rjm4DQvRk7SyF2B7Pj1qIE7LYzsrZ0RXzeMwU&_nc_ht=scontent.fsof10-1.fna&oh=00_AfDMH7Cgs6FO7oedU3A8npP42EUwP3oIkdqvCZnJFJqUHQ&oe=66303F1C" alt="Llama Icon" className="h-5 w-5 mr-2" />;
+      default:
+        return <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1024px-ChatGPT_logo.svg.png" alt="GPT-4o Mini Icon" className="h-5 w-5 mr-2" />;
+    }
+  };
+
   return (
-    <Card className="w-full shadow-lg border-gray-200 bg-gradient-to-br from-white to-gray-50">
+    <Card className="w-full shadow-lg border-gray-200 bg-white">
       <CardContent className="pt-6">
         <div className="space-y-4">
           <div className="flex items-start space-x-2">
@@ -121,34 +124,40 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
             </div>
           </div>
           
-          <div className="bg-white/80 backdrop-blur-sm rounded-md p-4 border border-gray-200">
-            <p className="text-gray-800 whitespace-pre-wrap">{generatedPrompt}</p>
+          <div className="bg-white backdrop-blur-sm rounded-md p-4 border border-gray-200">
+            <p className="text-gray-800 whitespace-pre-wrap">{prompt}</p>
           </div>
 
           <div className="p-4 bg-gray-50 rounded-md mt-1 border border-gray-100">
             <div className="flex items-start gap-3">
-              {generatedPrompt.length > 200 ? (
+              {prompt.length > 200 ? (
                 <div className="flex items-center gap-2 bg-white p-3 rounded-lg border border-gray-200 flex-1">
-                  <Brain className="h-5 w-5 text-gray-700" />
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900">Advanced Processing</h4>
-                    <p className="text-sm text-gray-600">Recommended: <span className="font-medium">GPT-4.5-preview</span></p>
+                  <div className="flex items-center">
+                    {getModelIcon()}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900">Advanced Processing</h4>
+                      <p className="text-sm text-gray-600">Recommended: <span className="font-medium">Claude 3 Opus</span></p>
+                    </div>
                   </div>
                 </div>
-              ) : generatedPrompt.includes("creative") || generatedPrompt.includes("imagine") ? (
+              ) : prompt.includes("creative") || prompt.includes("imagine") ? (
                 <div className="flex items-center gap-2 bg-white p-3 rounded-lg border border-gray-200 flex-1">
-                  <Rocket className="h-5 w-5 text-gray-700" />
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900">Creative Tasks</h4>
-                    <p className="text-sm text-gray-600">Recommended: <span className="font-medium">GPT-4o</span></p>
+                  <div className="flex items-center">
+                    {getModelIcon()}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900">Creative Tasks</h4>
+                      <p className="text-sm text-gray-600">Recommended: <span className="font-medium">GPT-4o</span></p>
+                    </div>
                   </div>
                 </div>
               ) : (
                 <div className="flex items-center gap-2 bg-white p-3 rounded-lg border border-gray-200 flex-1">
-                  <Zap className="h-5 w-5 text-gray-700" />
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900">Fast Processing</h4>
-                    <p className="text-sm text-gray-600">Recommended: <span className="font-medium">GPT-4o-mini</span></p>
+                  <div className="flex items-center">
+                    {getModelIcon()}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900">Fast Processing</h4>
+                      <p className="text-sm text-gray-600">Recommended: <span className="font-medium">GPT-4o Mini</span></p>
+                    </div>
                   </div>
                 </div>
               )}
@@ -200,14 +209,14 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
                   <Download className="mr-1 h-4 w-4" /> Download
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => downloadPrompt("json")}>
+              <DropdownMenuContent align="end" className="bg-white">
+                <DropdownMenuItem onClick={() => downloadPrompt("json")} className="text-gray-700 hover:text-gray-900">
                   <FileJson className="mr-2 h-4 w-4" /> JSON Format
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => downloadPrompt("md")}>
+                <DropdownMenuItem onClick={() => downloadPrompt("md")} className="text-gray-700 hover:text-gray-900">
                   <FileText className="mr-2 h-4 w-4" /> Markdown Format
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => downloadPrompt("xml")}>
+                <DropdownMenuItem onClick={() => downloadPrompt("xml")} className="text-gray-700 hover:text-gray-900">
                   <FileCode className="mr-2 h-4 w-4" /> XML Format
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -232,7 +241,7 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
       <SavePromptDialog
         open={saveDialogOpen}
         onOpenChange={setSaveDialogOpen}
-        prompt={generatedPrompt}
+        prompt={prompt}
         settings={settings}
       />
     </Card>
