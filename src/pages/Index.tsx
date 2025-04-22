@@ -5,6 +5,9 @@ import { Hero } from "@/components/Hero";
 import { PromptForm } from "@/components/PromptForm";
 import { PromptResult } from "@/components/PromptResult";
 import { Footer } from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Save, GalleryHorizontal } from "lucide-react";
 
 const Index = () => {
   const [promptData, setPromptData] = useState<{
@@ -52,9 +55,17 @@ const Index = () => {
             )}
             
             <div className="mt-12 bg-white p-6 rounded-lg border border-prompt-100 shadow-sm">
-              <h3 className="text-xl font-semibold text-prompt-800 mb-4">
-                Why Use PromptBloom?
-              </h3>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-semibold text-prompt-800">
+                  Why Use AiKnowledge?
+                </h3>
+                <Link to="/gallery">
+                  <Button variant="outline" className="flex items-center">
+                    <GalleryHorizontal className="mr-2 h-4 w-4" />
+                    View Gallery
+                  </Button>
+                </Link>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <h4 className="font-medium text-prompt-700">Save Time</h4>
@@ -69,9 +80,9 @@ const Index = () => {
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <h4 className="font-medium text-prompt-700">Learn Techniques</h4>
+                  <h4 className="font-medium text-prompt-700">Organize & Share</h4>
                   <p className="text-gray-600 text-sm">
-                    Improve your own prompt engineering skills by studying our examples.
+                    Save, organize, and download your prompts in various formats.
                   </p>
                 </div>
               </div>

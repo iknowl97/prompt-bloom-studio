@@ -1,5 +1,6 @@
 
 import { Github, Twitter, Heart } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function Footer() {
   return (
@@ -10,6 +11,13 @@ export function Footer() {
             <p className="text-[#8E9196] text-sm">
               © {new Date().getFullYear()} AiKnowledge. All rights reserved.
             </p>
+          </div>
+          
+          <div className="flex items-center space-x-4 mb-4 md:mb-0">
+            <Link to="/" className="text-[#8E9196] hover:text-white transition-colors">Home</Link>
+            <Link to="/gallery" className="text-[#8E9196] hover:text-white transition-colors">Gallery</Link>
+            <a href="#" className="text-[#8E9196] hover:text-white transition-colors">Guide</a>
+            <a href="#" className="text-[#8E9196] hover:text-white transition-colors">About</a>
           </div>
           
           <div className="flex items-center space-x-6">
@@ -30,4 +38,3 @@ export function Footer() {
     </footer>
   );
 }
-
