@@ -1,7 +1,8 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Copy, CheckCheck, Star, StarOff, MessageSquare, Save, Download } from "lucide-react";
+import { Copy, CheckCheck, Star, StarOff, MessageSquare, Save, Download, Brain, Zap, Settings2, Rocket } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { SavePromptDialog } from "@/components/SavePromptDialog";
 import { 
@@ -107,49 +108,72 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
   };
 
   return (
-    <Card className="w-full shadow-lg border-prompt-200 bg-gradient-to-br from-white to-prompt-50">
+    <Card className="w-full shadow-lg border-gray-200 bg-gradient-to-br from-white to-gray-50">
       <CardContent className="pt-6">
         <div className="space-y-4">
           <div className="flex items-start space-x-2">
-            <MessageSquare className="h-5 w-5 text-prompt-600 mt-1 flex-shrink-0" />
+            <MessageSquare className="h-5 w-5 text-gray-600 mt-1 flex-shrink-0" />
             <div className="space-y-1">
-              <h3 className="text-lg font-semibold text-prompt-800">Generated Prompt</h3>
+              <h3 className="text-lg font-semibold text-gray-800">Generated Prompt</h3>
               <p className="text-sm text-gray-500">
                 Model: {settings.modelType} • Temperature: {settings.temperature}
               </p>
             </div>
           </div>
           
-          <div className="bg-white/80 backdrop-blur-sm rounded-md p-4 border border-prompt-100">
+          <div className="bg-white/80 backdrop-blur-sm rounded-md p-4 border border-gray-200">
             <p className="text-gray-800 whitespace-pre-wrap">{generatedPrompt}</p>
           </div>
 
-          <div className="p-3 bg-prompt-50 rounded-md mt-1">
-            <h4 className="text-sm font-medium text-prompt-800 mb-1">AI Model Recommendation</h4>
-            <p className="text-sm text-gray-600">
+          <div className="p-4 bg-gray-50 rounded-md mt-1 border border-gray-100">
+            <div className="flex items-start gap-3">
               {generatedPrompt.length > 200 ? (
-                <>For detailed prompts like this, try <strong>GPT-4</strong> or <strong>Claude 3 Opus</strong> for best results.</>
+                <div className="flex items-center gap-2 bg-white p-3 rounded-lg border border-gray-200 flex-1">
+                  <Brain className="h-5 w-5 text-gray-700" />
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900">Advanced Processing</h4>
+                    <p className="text-sm text-gray-600">Recommended: <span className="font-medium">GPT-4.5-preview</span></p>
+                  </div>
+                </div>
               ) : generatedPrompt.includes("creative") || generatedPrompt.includes("imagine") ? (
-                <>For creative tasks, <strong>Midjourney</strong> or <strong>DALL-E 3</strong> would produce excellent results.</>
+                <div className="flex items-center gap-2 bg-white p-3 rounded-lg border border-gray-200 flex-1">
+                  <Rocket className="h-5 w-5 text-gray-700" />
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900">Creative Tasks</h4>
+                    <p className="text-sm text-gray-600">Recommended: <span className="font-medium">GPT-4o</span></p>
+                  </div>
+                </div>
               ) : (
-                <>This prompt would work well with <strong>GPT-4o</strong> for a balance of quality and speed.</>
+                <div className="flex items-center gap-2 bg-white p-3 rounded-lg border border-gray-200 flex-1">
+                  <Zap className="h-5 w-5 text-gray-700" />
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900">Fast Processing</h4>
+                    <p className="text-sm text-gray-600">Recommended: <span className="font-medium">GPT-4o-mini</span></p>
+                  </div>
+                </div>
               )}
-            </p>
+              <div className="flex items-center gap-2 bg-white p-3 rounded-lg border border-gray-200">
+                <Settings2 className="h-5 w-5 text-gray-700" />
+                <div>
+                  <p className="text-sm text-gray-600">Temperature: <span className="font-medium">{settings.temperature}</span></p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </CardContent>
       
-      <CardFooter className="border-t border-prompt-100 bg-prompt-50/50 py-3 px-6">
+      <CardFooter className="border-t border-gray-100 bg-gray-50/50 py-3 px-6">
         <div className="flex justify-between w-full">
           <div className="flex space-x-2">
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-prompt-700 hover:text-prompt-900 hover:bg-prompt-100"
+              className="text-gray-700 hover:text-gray-900 hover:bg-gray-100"
               onClick={handleFavorite}
             >
               {isFavorited ? (
-                <><Star className="mr-1 h-4 w-4 fill-prompt-500 text-prompt-500" /> Favorited</>
+                <><Star className="mr-1 h-4 w-4 fill-yellow-500 text-yellow-500" /> Favorited</>
               ) : (
                 <><StarOff className="mr-1 h-4 w-4" /> Add to Favorites</>
               )}
@@ -158,7 +182,7 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-prompt-700 hover:text-prompt-900 hover:bg-prompt-100"
+              className="text-gray-700 hover:text-gray-900 hover:bg-gray-100"
               onClick={handleSave}
             >
               <Save className="mr-1 h-4 w-4" /> Save
@@ -169,9 +193,9 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
-                  variant="ghost" 
+                  variant="outline" 
                   size="sm"
-                  className="text-prompt-700 hover:text-prompt-900 hover:bg-prompt-100"
+                  className="text-gray-700 hover:text-gray-900 hover:bg-gray-100 border-gray-200"
                 >
                   <Download className="mr-1 h-4 w-4" /> Download
                 </Button>
@@ -192,7 +216,7 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
             <Button 
               variant="outline" 
               size="sm"
-              className="text-prompt-700 border-prompt-200 hover:bg-prompt-100"
+              className="bg-gradient-to-r from-gray-900 to-gray-700 text-white hover:from-gray-800 hover:to-gray-600 border-0"
               onClick={handleCopy}
             >
               {isCopied ? (
