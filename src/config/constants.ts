@@ -4,5 +4,6 @@ export const API_KEYS = {
 };
 
 export const API_CONFIG = {
-  MODEL: "google/gemini-2.5-pro-exp-03-25:free"
+  MODEL: "deepseek/deepseek-v3-0324:free"
 };
+
