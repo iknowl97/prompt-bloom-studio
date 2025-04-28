@@ -14,6 +14,19 @@
    ```
 4. Access the application at http://localhost:8080
 
+## Portainer Deployment
+
+For one-click deployment in Portainer:
+
+1. In Portainer, go to Stacks
+2. Click "Add stack"
+3. Name your stack (e.g. "prompt-bloom-studio")
+4. Select "Repository" as the deployment method
+5. Enter your GitHub repository URL
+6. Set the path to `portainer-compose.yml`
+7. Enable "Automatic updates" if desired
+8. Click "Deploy the stack"
+
 ## Publishing
 
 To publish your container:
