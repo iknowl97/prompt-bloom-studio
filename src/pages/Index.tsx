@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
@@ -13,11 +14,20 @@ const Index = () => {
     prompt: string;
     settings: {
       generatedPrompt?: string;
+      temperature: number;
+      modelType: string;
     };
   } | null>(null);
 
   const handleGenerate = (prompt: string, settings: any) => {
-    setPromptData({ prompt, settings });
+    setPromptData({
+      prompt,
+      settings: {
+        ...settings,
+        temperature: 0.7,
+        modelType: "google/gemini-2.5-pro-exp-03-25:free"
+      }
+    });
   };
 
   return (
