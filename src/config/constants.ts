@@ -4,6 +4,6 @@ export const API_KEYS = {
 };
 
 export const API_CONFIG = {
-  MODEL: "deepseek/deepseek-v3-0324:free"
+  MODEL: "deepseek/deepseek-chat-v3-0324:free"
 };
 
