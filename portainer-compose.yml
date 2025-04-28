@@ -2,7 +2,9 @@ version: "3.8"
 
 services:
   prompt-bloom-studio:
-    image: your-registry/prompt-bloom-studio:latest
+    build:
+      context: .
+      dockerfile: ./PromptCrafter-Docker/Dockerfile
     container_name: prompt-bloom-studio
     ports:
       - "8080:80"
