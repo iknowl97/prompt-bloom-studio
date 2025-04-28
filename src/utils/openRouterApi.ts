@@ -1,6 +1,7 @@
 
-// OpenRouter API utility functions
+import { API_KEYS, API_CONFIG } from "../config/constants";
 
+// OpenRouter API utility functions
 interface OpenRouterMessage {
   role: "user" | "assistant" | "system";
   content: string | Array<{ type: string; text?: string; image_url?: { url: string } }>;
@@ -20,12 +21,8 @@ interface OpenRouterResponse {
   created: number;
 }
 
-const API_KEY = "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";
-const MODEL = "google/gemini-2.5-pro-exp-03-25:free";
-
 export const generatePrompt = async (prompt: string): Promise<string> => {
   try {
-    // Prepare the system message to generate a prompt
     const messages: OpenRouterMessage[] = [
       {
         role: "system",
@@ -40,13 +37,13 @@ export const generatePrompt = async (prompt: string): Promise<string> => {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${API_KEY}`,
-        "HTTP-Referer": window.location.origin, 
+        "Authorization": `Bearer ${API_KEYS.OPENROUTER_API_KEY}`,
+        "HTTP-Referer": window.location.origin,
         "X-Title": "AiKnowledge Prompt Generator",
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: MODEL,
+        model: API_CONFIG.MODEL,
         messages: messages,
         temperature: 0.7,
       })
