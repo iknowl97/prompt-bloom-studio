@@ -50,38 +50,38 @@ docker-compose up -d
 2. Click "Add stack"
 3. Name your stack (e.g. "prompt-bloom-studio")
 4. Select "Repository" as the deployment method
-5. Enter your GitHub repository URL
+5. Enter your GitHub repository URL: `https://github.com/iknowl97/prompt-bloom-studio.git`
 6. Set the path to `portainer-compose.yml`
 7. Set environment variables:
-   - `GITHUB_USER`: Your GitHub username
-   - `DOMAIN`: Your domain name
+   - `DOMAIN`: Your domain name or IP address
 8. Click "Deploy the stack"
+   1
+   Note: The stack will build the Docker image locally instead of pulling from a registry.
 
-### Manual Production Deployment
+### Local Build and Deployment
 
 ```bash
-# Pull the image
-docker pull ghcr.io/YOUR_GITHUB_USER/prompt-bloom-studio:latest
+# Clone the repository
+git clone https://github.com/iknowl97/prompt-bloom-studio.git
+cd prompt-bloom-studio
 
 # Create a network
 docker network create prompt-network
 
-# Run the container
-docker run -d \
-  --name prompt-bloom-studio \
-  --restart unless-stopped \
-  --network prompt-network \
-  -p 8080:80 \
-  -e DOMAIN=your-domain.com \
-  -v ./nginx.conf:/etc/nginx/conf.d/default.conf:ro \
-  --health-cmd="wget -qO- http://localhost:80/ || exit 1" \
-  --health-interval=30s \
-  --health-timeout=10s \
-  --health-retries=3 \
-  --health-start-period=40s \
-  --security-opt no-new-privileges:true \
-  ghcr.io/YOUR_GITHUB_USER/prompt-bloom-studio:latest
+# Build and run using docker-compose
+docker-compose -f portainer-compose.yml up -d --build
 ```
+
+The application will be available at `http://localhost:8080` after the build completes.
+
+To check the container status:
+
+```bash
+docker ps
+docker logs prompt-bloom-studio
+```
+
+````
 
 ## Monitoring
 
@@ -89,7 +89,7 @@ Check container health status:
 
 ```bash
 docker inspect --format='{{.State.Health.Status}}' prompt-bloom-studio
-```
+````
 
 ## Troubleshooting
 

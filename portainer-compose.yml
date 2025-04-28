@@ -2,17 +2,22 @@ version: "3.8"
 
 services:
   prompt-bloom-studio:
-    image: ghcr.io/${GITHUB_USER}/prompt-bloom-studio:latest
+    build:
+      context: .
+      dockerfile: ./PromptCrafter-Docker/Dockerfile
+      args:
+        NODE_ENV: production
     container_name: prompt-bloom-studio
     ports:
       - "8080:80"
     restart: unless-stopped
     environment:
-      - DOMAIN=${DOMAIN}
+      - DOMAIN=${DOMAIN:-localhost}
     env_file:
       - .env
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./PromptCrafter-Docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./dist:/usr/share/nginx/html:ro
     networks:
       - prompt-network
     healthcheck:
