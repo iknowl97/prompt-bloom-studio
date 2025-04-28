@@ -21,12 +21,15 @@ interface OpenRouterResponse {
   created: number;
 }
 
-export const generatePrompt = async (prompt: string): Promise<string> => {
+export const generatePrompt = async (prompt: string, purposeContext: string = ""): Promise<string> => {
   try {
+    // Base system prompt with optional purpose context prepended
+    const systemPrompt = `${purposeContext}You are an AI prompt engineer. Create a detailed, effective prompt based on the user's request. Make the prompt clear, specific, and well-structured.`;
+    
     const messages: OpenRouterMessage[] = [
       {
         role: "system",
-        content: "You are an AI prompt engineer. Create a detailed, effective prompt based on the user's request. Make the prompt clear, specific, and well-structured."
+        content: systemPrompt
       },
       {
         role: "user",

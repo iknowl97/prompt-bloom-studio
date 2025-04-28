@@ -14,6 +14,7 @@ const Index = () => {
     prompt: string;
     settings: {
       generatedPrompt?: string;
+      selectedPurposes?: string[];
       temperature: number;
       modelType: string;
     };
@@ -25,7 +26,7 @@ const Index = () => {
       settings: {
         ...settings,
         temperature: 0.7,
-        modelType: "google/gemini-2.5-pro-exp-03-25:free"
+        modelType: "deepseek/deepseek-chat-v3-0324:free"
       }
     });
   };
