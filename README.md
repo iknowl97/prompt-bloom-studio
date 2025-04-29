@@ -1,4 +1,18 @@
+
 # Prompt Bloom Studio
+
+An AI-powered prompt engineering platform that helps users create optimized prompts for various AI models.
+
+## Features
+
+- **Create from Scratch**: Generate powerful AI prompts from simple descriptions
+- **Enhance Existing**: Improve and optimize your existing AI prompts
+- **Purpose-Specific**: Tailor prompts for chat models, image generation, video creation, and more
+- **Model Recommendations**: Get intelligent suggestions for the best AI model to use
+- **Authentication**: Save prompts to your personal gallery
+- **Export Options**: Download prompts in JSON, Markdown, or XML formats
+- **Modern UI**: Clean, intuitive interface with pastel color scheme
+- **Docker Ready**: Easy deployment with Docker and Portainer
 
 ## Docker Setup
 
@@ -43,19 +57,23 @@ The deployment includes:
 - Security enhancements (read-only volumes, no-new-privileges)
 - Non-root user execution in container
 
-## Publishing
+## Usage Guide
 
-To publish your container:
+### Creating Prompts
 
-1. Build the image:
-   ```bash
-   docker-compose build
-   ```
-2. Tag and push to your container registry:
-   ```bash
-   docker tag prompt-bloom-studio your-registry/prompt-bloom-studio:latest
-   docker push your-registry/prompt-bloom-studio:latest
-   ```
+1. Select between "Create from Scratch" or "Enhance Existing" prompt mode
+2. For new prompts, choose the intended purpose (chat, image, video, etc.)
+3. Enter your prompt idea or existing prompt text
+4. Click "Generate Prompt" or "Enhance Prompt"
+5. Review your generated prompt
+6. Copy, save, or download the result
+
+### Account Management
+
+- Guest users can generate prompts without logging in
+- Create an account to save prompts to your personal gallery
+- Access your saved prompts from the Gallery page
+- Organize prompts with folders and tags
 
 ## Environment Variables
 
@@ -73,3 +91,11 @@ The following variables are commented out by default in `.env.example` but can b
 - `DB_PASSWORD`: Database password
 
 All environment variables are properly handled with secure defaults and validation in the application.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

@@ -20,6 +20,7 @@ interface OpenRouterResponse {
   created: number;
 }
 
+// Get purpose-specific prompt guidance
 const getPurposeSpecificPrompt = (selectedPurposes: string[]) => {
   const purposePrompts = {
     chat: "Create a conversational prompt optimized for AI chat models, focusing on natural dialogue and clear instructions.",
@@ -35,13 +36,10 @@ const getPurposeSpecificPrompt = (selectedPurposes: string[]) => {
   return selectedPurposes.map(purpose => purposePrompts[purpose as keyof typeof purposePrompts]).join(" ");
 };
 
-export const generatePrompt = async (prompt: string, purposeContext: string = "", selectedPurposes: string[] = []): Promise<string> => {
-  try {
-    const purposeSpecificPrompt = getPurposeSpecificPrompt(selectedPurposes);
-    
-    const systemPrompt = `You are an AI prompt engineer specializing in crafting high-quality prompts.
-    ${purposeContext}
-    ${purposeSpecificPrompt}
+// Get mode-specific system instructions
+const getModeSpecificInstructions = (mode: "create" | "enhance") => {
+  if (mode === "create") {
+    return `You are an AI prompt engineer specializing in crafting high-quality prompts.
     Focus on these key aspects:
     1. Clarity and specificity in instructions
     2. Proper context and constraints
@@ -49,6 +47,32 @@ export const generatePrompt = async (prompt: string, purposeContext: string = ""
     4. Additional parameters specific to the selected purpose(s)
     
     Create a detailed, effective prompt based on the user's request.`;
+  } else {
+    return `You are an AI prompt optimizer specializing in improving existing prompts.
+    Analyze the provided prompt and enhance it by:
+    1. Improving clarity and specificity
+    2. Adding relevant context and constraints
+    3. Refining output format specifications
+    4. Reorganizing and structuring the prompt for better results
+    5. Maintaining the original intent and purpose
+    
+    Return an enhanced version of the prompt that will produce better results.`;
+  }
+};
+
+export const generatePrompt = async (
+  promptText: string, 
+  purposeContext: string = "", 
+  selectedPurposes: string[] = [],
+  mode: "create" | "enhance" = "create"
+): Promise<string> => {
+  try {
+    const purposeSpecificPrompt = getPurposeSpecificPrompt(selectedPurposes);
+    const modeSpecificInstructions = getModeSpecificInstructions(mode);
+    
+    const systemPrompt = `${modeSpecificInstructions}
+    ${purposeContext}
+    ${purposeSpecificPrompt}`;
     
     const messages: OpenRouterMessage[] = [
       {
@@ -57,7 +81,7 @@ export const generatePrompt = async (prompt: string, purposeContext: string = ""
       },
       {
         role: "user",
-        content: prompt
+        content: promptText
       }
     ];
 

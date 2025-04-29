@@ -1,3 +1,4 @@
+
 # Deployment Guide (2025 Standards)
 
 This document outlines the deployment options and 2025 standards compliance for Prompt Bloom Studio.
@@ -55,8 +56,8 @@ docker-compose up -d
 7. Set environment variables:
    - `DOMAIN`: Your domain name or IP address
 8. Click "Deploy the stack"
-   1
-   Note: The stack will build the Docker image locally instead of pulling from a registry.
+
+Note: The stack will build the Docker image locally instead of pulling from a registry.
 
 ### Local Build and Deployment
 
@@ -81,18 +82,28 @@ docker ps
 docker logs prompt-bloom-studio
 ```
 
-````
-
 ## Monitoring
 
 Check container health status:
 
 ```bash
 docker inspect --format='{{.State.Health.Status}}' prompt-bloom-studio
-````
+```
 
 ## Troubleshooting
 
 - **Container not starting**: Check logs with `docker logs prompt-bloom-studio`
 - **Health check failing**: Verify nginx configuration and network settings
 - **Environment variables**: Ensure all required variables are set correctly
+- **Authentication issues**: If you're having trouble with user authentication, check browser console logs and make sure localStorage is enabled
+- **Prompt generation errors**: Verify the OpenRouter API key is correctly configured in your `.env` file
+
+## Production Hardening Tips
+
+For production environments, consider these additional security measures:
+
+1. **Setup SSL/TLS**: Configure HTTPS with Let's Encrypt certificates
+2. **Network Isolation**: Use dedicated Docker networks with restricted access
+3. **Regular Updates**: Set up automated security scans and updates
+4. **Backup Strategy**: Implement regular backups of user data and prompts
+5. **Monitoring**: Add logging and monitoring solutions like Prometheus/Grafana

@@ -1,12 +1,12 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Copy, CheckCheck, Star, StarOff, MessageSquare, Save, Download, Brain, Zap, Settings2, Rocket } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { SavePromptDialog } from "@/components/SavePromptDialog";
-import { 
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, 
+import { AuthModal } from "@/components/AuthModal";
+import { useUser } from "@/hooks/use-user";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { FileJson, FileText, FileCode } from "lucide-react";
@@ -24,6 +24,8 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
   const [isCopied, setIsCopied] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const { isAuthenticated } = useUser();
   
   const handleCopy = () => {
     navigator.clipboard.writeText(prompt);
@@ -46,6 +48,11 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
   };
 
   const handleSave = () => {
+    if (!isAuthenticated) {
+      setAuthModalOpen(true);
+      return;
+    }
+    
     setSaveDialogOpen(true);
   };
 
@@ -128,7 +135,7 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
             <p className="text-gray-800 whitespace-pre-wrap">{prompt}</p>
           </div>
 
-          <div className="p-4 bg-gray-50 rounded-md mt-1 border border-gray-100">
+          <div className="p-4 bg-prompt-50 rounded-md mt-1 border border-prompt-100">
             <div className="flex items-start gap-3">
               {prompt.length > 200 ? (
                 <div className="flex items-center gap-2 bg-white p-3 rounded-lg border border-gray-200 flex-1">
@@ -172,7 +179,7 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
         </div>
       </CardContent>
       
-      <CardFooter className="border-t border-gray-100 bg-gray-50/50 py-3 px-6">
+      <CardFooter className="border-t border-gray-100 bg-prompt-50/50 py-3 px-6">
         <div className="flex justify-between w-full">
           <div className="flex space-x-2">
             <Button 
@@ -225,7 +232,7 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
             <Button 
               variant="outline" 
               size="sm"
-              className="bg-gradient-to-r from-gray-900 to-gray-700 text-white hover:from-gray-800 hover:to-gray-600 border-0"
+              className="bg-gradient-to-r from-prompt-900 to-prompt-700 text-white hover:from-prompt-800 hover:to-prompt-600 border-0"
               onClick={handleCopy}
             >
               {isCopied ? (
@@ -243,6 +250,15 @@ export function PromptResult({ prompt, settings }: PromptResultProps) {
         onOpenChange={setSaveDialogOpen}
         prompt={prompt}
         settings={settings}
+      />
+      
+      <AuthModal
+        open={authModalOpen}
+        onOpenChange={setAuthModalOpen}
+        onSuccess={() => {
+          setSaveDialogOpen(true);
+          setAuthModalOpen(false);
+        }}
       />
     </Card>
   );
