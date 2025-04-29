@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
@@ -10,7 +9,7 @@ import { Link } from "react-router-dom";
 import { GalleryHorizontal, Sparkles } from "lucide-react";
 import { useUser } from "@/hooks/use-user";
 import { AuthModal } from "@/components/AuthModal";
-import { ProfileMenu } from "@/components/ProfileMenu";
+import ProfileMenu from "@/components/ProfileMenu";
 
 const Index = () => {
   const [promptData, setPromptData] = useState<{
