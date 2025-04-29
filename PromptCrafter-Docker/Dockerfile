@@ -19,6 +19,9 @@ RUN npm run build
 # Production stage
 FROM nginx:stable-alpine AS production
 
+# Install OpenSSL for certificate generation
+RUN apk add --no-cache openssl
+
 # Add non-root user for security
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
@@ -29,8 +32,12 @@ RUN mkdir -p /usr/share/nginx/html && \
 # Copy built files from build stage to nginx serve directory
 COPY --from=build --chown=appuser:appgroup /app/dist /usr/share/nginx/html
 
-# Copy custom nginx config
+# Copy custom nginx config and SSL setup script
 COPY PromptCrafter-Docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY PromptCrafter-Docker/ssl-setup.sh /tmp/ssl-setup.sh
+
+# Make SSL setup script executable and run it
+RUN chmod +x /tmp/ssl-setup.sh && /tmp/ssl-setup.sh
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \

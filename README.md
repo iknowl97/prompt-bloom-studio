@@ -69,12 +69,17 @@ MIT License - feel free to use and modify!
    cd PromptCrafter-Docker
    docker-compose up -d
    ```
-4. Access the application at http://localhost:8080
+4. Access the application at:
+   - HTTP: http://localhost:7777
+   - HTTPS: https://localhost:7778
 5. Check container health status:
+
    ```bash
    docker ps
    docker inspect --format='{{.State.Health.Status}}' prompt-bloom-studio
    ```
+
+   Note: When accessing via HTTPS, your browser may show a security warning because the certificate is self-signed. This is normal for local development. You can proceed by clicking "Advanced" and then "Proceed to localhost (unsafe)".
 
 ## Portainer Deployment (2025 Standards Compliant)
 

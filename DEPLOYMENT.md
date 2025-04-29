@@ -1,4 +1,3 @@
-
 # Deployment Guide (2025 Standards)
 
 This document outlines the deployment options and 2025 standards compliance for Prompt Bloom Studio.
@@ -73,7 +72,12 @@ docker network create prompt-network
 docker-compose -f portainer-compose.yml up -d --build
 ```
 
-The application will be available at `http://localhost:8080` after the build completes.
+The application will be available at:
+
+- HTTP: `http://localhost:7777`
+- HTTPS: `https://localhost:7778`
+
+Note: When accessing via HTTPS, your browser may show a security warning because the certificate is self-signed. This is normal for local development. You can proceed by clicking "Advanced" and then "Proceed to localhost (unsafe)".
 
 To check the container status:
 
