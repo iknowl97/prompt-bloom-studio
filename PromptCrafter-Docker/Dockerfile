@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies with exact versions for reproducibility
-RUN npm ci --production && npm cache clean --force
+# Install all dependencies including devDependencies for build
+RUN npm ci && npm cache clean --force
 
 # Copy all files
 COPY . ./
@@ -24,7 +24,7 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 # Set proper permissions
 RUN mkdir -p /usr/share/nginx/html && \
-    chown -R appuser:appgroup /usr/share/nginx/html
+  chown -R appuser:appgroup /usr/share/nginx/html
 
 # Copy built files from build stage to nginx serve directory
 COPY --from=build --chown=appuser:appgroup /app/dist /usr/share/nginx/html
@@ -38,9 +38,9 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 
 # Security: Drop capabilities and run as non-root
 RUN chmod -R 755 /usr/share/nginx/html && \
-    chmod -R 755 /var/cache/nginx && \
-    chmod -R 755 /var/log/nginx && \
-    chmod -R 755 /etc/nginx/conf.d
+  chmod -R 755 /var/cache/nginx && \
+  chmod -R 755 /var/log/nginx && \
+  chmod -R 755 /etc/nginx/conf.d
 
 # Expose port 80
 EXPOSE 80

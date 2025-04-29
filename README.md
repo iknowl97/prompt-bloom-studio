@@ -1,18 +1,60 @@
-
 # Prompt Bloom Studio
 
-An AI-powered prompt engineering platform that helps users create optimized prompts for various AI models.
+An AI-powered prompt engineering platform that helps you create and optimize prompts for various AI models. Built with modern technologies and a beautiful UI, it's designed to make prompt engineering accessible and efficient.
 
-## Features
+## 🚀 Quick Start
 
-- **Create from Scratch**: Generate powerful AI prompts from simple descriptions
-- **Enhance Existing**: Improve and optimize your existing AI prompts
-- **Purpose-Specific**: Tailor prompts for chat models, image generation, video creation, and more
-- **Model Recommendations**: Get intelligent suggestions for the best AI model to use
-- **Authentication**: Save prompts to your personal gallery
-- **Export Options**: Download prompts in JSON, Markdown, or XML formats
-- **Modern UI**: Clean, intuitive interface with pastel color scheme
-- **Docker Ready**: Easy deployment with Docker and Portainer
+### Local Development
+
+```bash
+# Clone the repository
+git clone https://github.com/iknowl97/prompt-bloom-studio.git
+cd prompt-bloom-studio
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+### 🐳 Docker Deployment
+
+```bash
+# Clone and enter the repository
+git clone https://github.com/iknowl97/prompt-bloom-studio.git
+cd prompt-bloom-studio
+
+# Build and start the container
+docker-compose up -d --build
+```
+
+The application will be available at `http://localhost:8080`
+
+### 🔍 Troubleshooting
+
+- **Build fails**: Make sure you have Node.js 18+ installed
+- **Container not starting**: Check logs with `docker logs prompt-bloom-studio`
+- **Cannot access app**: Verify port 8080 is not in use
+- **UI not loading**: Clear browser cache and reload
+
+## ⚙️ Environment Variables
+
+- `DOMAIN`: Your domain or IP address (default: localhost)
+- `NODE_ENV`: Environment mode (development/production)
+
+## 🌟 Features
+
+- Create powerful AI prompts from simple descriptions
+- Enhance and optimize existing prompts
+- Purpose-specific templates for different AI models
+- Modern, intuitive interface with dark mode support
+- Save and organize your prompts
+- Export in multiple formats (JSON, MD, XML)
+
+## 📝 License
+
+MIT License - feel free to use and modify!
 
 ## Docker Setup
 
