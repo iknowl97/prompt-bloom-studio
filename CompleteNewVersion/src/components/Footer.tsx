@@ -1,4 +1,3 @@
-
 import { Github, Twitter, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -14,10 +13,18 @@ export function Footer() {
           </div>
           
           <div className="flex items-center space-x-4 mb-4 md:mb-0">
-            <Link to="/" className="text-[#8E9196] hover:text-white transition-colors">Home</Link>
-            <Link to="/gallery" className="text-[#8E9196] hover:text-white transition-colors">Gallery</Link>
-            <a href="#" className="text-[#8E9196] hover:text-white transition-colors">Guide</a>
-            <a href="#" className="text-[#8E9196] hover:text-white transition-colors">About</a>
+            <Link to="/" className="text-[#8E9196] hover:text-white transition-colors">
+              Home
+            </Link>
+            <Link to="/gallery" className="text-[#8E9196] hover:text-white transition-colors">
+              Gallery
+            </Link>
+            <a href="#" className="text-[#8E9196] hover:text-white transition-colors">
+              Guide
+            </a>
+            <a href="#" className="text-[#8E9196] hover:text-white transition-colors">
+              About
+            </a>
           </div>
           
           <div className="flex items-center space-x-6">
