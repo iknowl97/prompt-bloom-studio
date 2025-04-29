@@ -11,6 +11,9 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    port: 8080
+  },
   define: {
     'import.meta.env.VITE_OPENROUTER_API_KEY': JSON.stringify(process.env.VITE_OPENROUTER_API_KEY),
     'import.meta.env.VITE_DEFAULT_MODEL': JSON.stringify(process.env.VITE_DEFAULT_MODEL),
