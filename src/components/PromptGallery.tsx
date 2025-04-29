@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { usePrompts, SavedPrompt, PromptFolder } from "@/contexts/PromptContext";
+import { usePrompts, SavedPrompt, PromptFolder, Tag } from "@/contexts/PromptContext";
 import { 
   Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle 
 } from "@/components/ui/card";
@@ -17,6 +17,7 @@ import {
   GalleryHorizontal, GalleryVertical, Bookmark, Info
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { TagDisplay } from "@/components/TagDisplay";
 
 export default function PromptGallery() {
   const { savedPrompts, folders, createFolder, deletePrompt, deleteFolder, updateFolder } = usePrompts();
@@ -328,9 +329,7 @@ export default function PromptGallery() {
                           {prompt.tags && prompt.tags.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-2">
                               {prompt.tags.map((tag, i) => (
-                                <span key={i} className="px-2 py-1 bg-gray-100 text-xs rounded-full">
-                                  {tag}
-                                </span>
+                                <TagDisplay key={i} tag={tag} />
                               ))}
                             </div>
                           )}
@@ -440,9 +439,7 @@ export default function PromptGallery() {
                       <h4 className="text-sm font-medium">Tags</h4>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {selectedPrompt.tags.map((tag, i) => (
-                          <span key={i} className="px-2 py-1 bg-gray-100 text-xs rounded-full">
-                            {tag}
-                          </span>
+                          <TagDisplay key={i} tag={tag} />
                         ))}
                       </div>
                     </div>
