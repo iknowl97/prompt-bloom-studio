@@ -1,6 +1,6 @@
 
 export const API_KEYS = {
-  // Use environment variable from the .env file via import.meta.env
+  // Use environment variable from the .env file via import.meta.env, with a fallback
   OPENROUTER_API_KEY: import.meta.env.VITE_OPENROUTER_API_KEY || "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"
 };
 

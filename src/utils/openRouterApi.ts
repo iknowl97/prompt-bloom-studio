@@ -87,14 +87,24 @@ export const generatePrompt = async (
       }
     ];
 
-    console.log("Using API key:", API_KEYS.OPENROUTER_API_KEY);
+    // Make sure we're using the API key correctly
+    const apiKey = API_KEYS.OPENROUTER_API_KEY || "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";
     console.log("Using model:", modelType);
+
+    // Add more detailed logging to help debug
+    console.log("API request details:", {
+      model: modelType,
+      messagesCount: messages.length,
+      temperature: temperature,
+      apiKeyLength: apiKey.length,
+      apiKeyPrefix: apiKey.substring(0, 10) + "...", // Only log part of the key for security
+    });
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${API_KEYS.OPENROUTER_API_KEY}`,
-        "HTTP-Referer": window.location.origin,
+        "Authorization": `Bearer ${apiKey}`,
+        "HTTP-Referer": window.location.origin || "http://localhost:8080",
         "X-Title": "Prompt Bloom Studio",
         "Content-Type": "application/json"
       },
@@ -107,7 +117,8 @@ export const generatePrompt = async (
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error?.message || "Failed to generate prompt");
+      console.error("OpenRouter API error:", errorData);
+      throw new Error(errorData.error?.message || `Failed to generate prompt: ${response.status} ${response.statusText}`);
     }
 
     const data: OpenRouterResponse = await response.json();
