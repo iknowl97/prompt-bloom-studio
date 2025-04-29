@@ -1,6 +1,6 @@
 
 export const API_KEYS = {
-  OPENROUTER_API_KEY: "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"
+  OPENROUTER_API_KEY: "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"
 };
 
 export const API_CONFIG = {
