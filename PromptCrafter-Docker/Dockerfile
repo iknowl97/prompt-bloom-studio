@@ -37,7 +37,10 @@ COPY PromptCrafter-Docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY PromptCrafter-Docker/ssl-setup.sh /tmp/ssl-setup.sh
 
 # Make SSL setup script executable and run it
-RUN chmod +x /tmp/ssl-setup.sh && /tmp/ssl-setup.sh
+RUN mkdir -p /etc/nginx/ssl && \
+  chmod +x /tmp/ssl-setup.sh && \
+  sh /tmp/ssl-setup.sh && \
+  chown -R appuser:appgroup /etc/nginx/ssl
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
