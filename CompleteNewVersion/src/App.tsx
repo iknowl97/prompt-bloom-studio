@@ -1,48 +1,45 @@
+import * as React from "react"
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { Layout } from "./components/layout/Layout"
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import Gallery from "./pages/Gallery";
-import Admin from "./pages/Admin";
-import Profile from "./pages/Profile";
-import NotFound from "./pages/NotFound";
-import { PromptProvider } from "./contexts/PromptContext";
-import { UserProvider } from "./contexts/UserContext";
-import { ROUTES } from "./config/constants";
+// Pages
+import { HomePage } from "./pages/HomePage"
+import { PromptBuilder } from "./pages/PromptBuilder"
+import { Templates } from "./pages/Templates"
+import { Learn } from "./pages/Learn"
+import { Profile } from "./pages/Profile"
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false,
+      staleTime: 60 * 1000, // 1 minute
       retry: 1,
     },
   },
-});
+})
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <UserProvider>
-        <PromptProvider>
-          <Toaster />
-          <Sonner position="top-right" expand closeButton richColors />
-          <BrowserRouter>
-            <Routes>
-              <Route path={ROUTES.HOME} element={<Index />} />
-              <Route path={ROUTES.GALLERY} element={<Gallery />} />
-              <Route path={ROUTES.ADMIN} element={<Admin />} />
-              <Route path="/profile" element={<Profile />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </PromptProvider>
-      </UserProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/prompt-builder" element={<PromptBuilder />} />
+            <Route path="/templates" element={<Templates />} />
+            <Route path="/templates/community" element={<Templates />} />
+            <Route path="/templates/personal" element={<Templates />} />
+            <Route path="/learn" element={<Learn />} />
+            <Route path="/learn/basics" element={<Learn />} />
+            <Route path="/learn/advanced" element={<Learn />} />
+            <Route path="/learn/examples" element={<Learn />} />
+            <Route path="/profile" element={<Profile />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </QueryClientProvider>
+  )
+}
 
-export default App;
+export default App

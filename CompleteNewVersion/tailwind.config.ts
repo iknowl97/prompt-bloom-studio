@@ -1,13 +1,9 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
-export default {
+const config = {
 	darkMode: ["class"],
-	content: [
-		"./pages/**/*.{ts,tsx}",
-		"./components/**/*.{ts,tsx}",
-		"./app/**/*.{ts,tsx}",
-		"./src/**/*.{ts,tsx}",
-	],
+	content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
 	prefix: "",
 	theme: {
 		container: {
@@ -22,9 +18,14 @@ export default {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
-				background: 'hsl(var(--background))',
+				background: "rgb(var(--background) / <alpha-value>)",
 				foreground: 'hsl(var(--foreground))',
 				primary: {
+					50: "rgb(var(--primary-50) / <alpha-value>)",
+					100: "rgb(var(--primary-100) / <alpha-value>)",
+					200: "rgb(var(--primary-200) / <alpha-value>)",
+					300: "rgb(var(--primary-300) / <alpha-value>)",
+					400: "rgb(var(--primary-400) / <alpha-value>)",
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
 				},
@@ -42,6 +43,10 @@ export default {
 					950: '#2e1065',
 				},
 				secondary: {
+					50: "rgb(var(--secondary-50) / <alpha-value>)",
+					100: "rgb(var(--secondary-100) / <alpha-value>)",
+					200: "rgb(var(--secondary-200) / <alpha-value>)",
+					300: "rgb(var(--secondary-300) / <alpha-value>)",
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))'
 				},
@@ -54,6 +59,9 @@ export default {
 					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
+					50: "rgb(var(--accent-50) / <alpha-value>)",
+					100: "rgb(var(--accent-100) / <alpha-value>)",
+					200: "rgb(var(--accent-200) / <alpha-value>)",
 					DEFAULT: 'hsl(var(--accent))',
 					foreground: 'hsl(var(--accent-foreground))'
 				},
@@ -88,11 +96,22 @@ export default {
 					900: '#18181b',
 					950: '#09090b',
 				},
+				"text-primary": "rgb(var(--text-primary) / <alpha-value>)",
+				"text-secondary": "rgb(var(--text-secondary) / <alpha-value>)",
+				success: "rgb(var(--success) / <alpha-value>)",
+				warning: "rgb(var(--warning) / <alpha-value>)",
+				error: "rgb(var(--error) / <alpha-value>)",
+				info: "rgb(var(--info) / <alpha-value>)",
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
+			},
+			fontFamily: {
+				sans: ["Inter", "sans-serif"],
+				heading: ["Poppins", "sans-serif"],
+				mono: ["JetBrains Mono", "monospace"],
 			},
 			keyframes: {
 				'accordion-down': {
@@ -142,5 +161,7 @@ export default {
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [tailwindcssAnimate],
 } satisfies Config;
+
+export default config;

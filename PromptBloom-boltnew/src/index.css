@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Poppins:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply bg-background text-text-primary;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-semibold leading-tight;
+  }
+
+  h1 {
+    @apply text-3xl md:text-4xl;
+  }
+
+  h2 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl;
+  }
+
+  h4 {
+    @apply text-lg md:text-xl;
+  }
+
+  p {
+    @apply leading-relaxed;
+  }
+
+  body {
+    @apply font-sans antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-primary-400 outline-offset-2;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium transition-colors duration-200;
+  }
+
+  .btn-primary {
+    @apply bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary-100 text-secondary-900 hover:bg-secondary-200 active:bg-secondary-300;
+  }
+
+  .btn-accent {
+    @apply bg-accent-500 text-white hover:bg-accent-600 active:bg-accent-700;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-text-primary hover:bg-gray-100 active:bg-gray-200;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-md p-6;
+  }
+
+  .input {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-300 focus:border-primary-300;
+  }
+
+  .prompt-block {
+    @apply p-3 rounded-md border-2 border-dashed border-gray-300 bg-white hover:border-primary-300 transition-colors duration-200;
+  }
+
+  .code-block {
+    @apply font-mono bg-gray-800 text-white p-4 rounded-md overflow-x-auto;
+  }
+}

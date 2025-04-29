@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -11,17 +10,79 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/contexts/UserContext";
 import { useNavigate } from "react-router-dom";
+import {
+  User,
+  Settings,
+  Star,
+  History,
+  Award,
+  Edit,
+  Save,
+} from "lucide-react";
+
+interface UserProfile {
+  name: string;
+  email: string;
+  avatar: string;
+  role: string;
+  joinedDate: string;
+  stats: {
+    promptsCreated: number;
+    templatesShared: number;
+    modulesCompleted: number;
+  };
+  achievements: {
+    id: string;
+    name: string;
+    description: string;
+    icon: React.ElementType;
+    earned: boolean;
+  }[];
+}
+
+const mockProfile: UserProfile = {
+  name: "John Doe",
+  email: "john.doe@example.com",
+  avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
+  role: "Prompt Engineer",
+  joinedDate: "January 2024",
+  stats: {
+    promptsCreated: 42,
+    templatesShared: 12,
+    modulesCompleted: 8,
+  },
+  achievements: [
+    {
+      id: "first-prompt",
+      name: "First Prompt",
+      description: "Created your first prompt",
+      icon: Star,
+      earned: true,
+    },
+    {
+      id: "template-master",
+      name: "Template Master",
+      description: "Created 10 templates",
+      icon: Award,
+      earned: true,
+    },
+    {
+      id: "learner",
+      name: "Dedicated Learner",
+      description: "Completed all basic tutorials",
+      icon: History,
+      earned: false,
+    },
+  ],
+};
 
 const Profile = () => {
   const { user, isAuthenticated, updateProfile, updatePreferences } = useUser();
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const [name, setName] = useState(user?.name || "");
-  const [avatarUrl, setAvatarUrl] = useState(user?.avatar || "");
-  const [defaultModel, setDefaultModel] = useState(user?.preferences?.defaultModelType || "deepseek/deepseek-chat-v3-0324:free");
-  const [defaultTemperature, setDefaultTemperature] = useState(user?.preferences?.defaultTemperature || 0.7);
-  const [theme, setTheme] = useState(user?.preferences?.theme || "light");
+  const [isEditing, setIsEditing] = useState(false);
+  const [profile, setProfile] = useState(mockProfile);
 
   // Check if user is logged in
   React.useEffect(() => {
@@ -35,24 +96,9 @@ const Profile = () => {
     }
   }, [isAuthenticated, navigate, toast]);
 
-  const handleUpdateProfile = () => {
-    updateProfile({ name, avatar: avatarUrl });
-    toast({
-      title: "Profile updated",
-      description: "Your profile has been updated successfully.",
-    });
-  };
-
-  const handleUpdatePreferences = () => {
-    updatePreferences({ 
-      defaultModelType: defaultModel,
-      defaultTemperature: defaultTemperature,
-      theme: theme
-    });
-    toast({
-      title: "Preferences updated",
-      description: "Your preferences have been updated successfully.",
-    });
+  const handleSave = () => {
+    setIsEditing(false);
+    // Save profile changes
   };
 
   const getInitials = (name: string) => {
@@ -88,55 +134,41 @@ const Profile = () => {
                 <CardTitle>Profile Information</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-col sm:flex-row gap-8">
-                  <div className="flex flex-col items-center space-y-4">
-                    <Avatar className="h-24 w-24">
-                      <AvatarFallback className="text-xl bg-gradient-to-br from-purple-500 to-indigo-700 text-white">
-                        {getInitials(user.name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <Button variant="outline" size="sm">
-                      Change Avatar
-                    </Button>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="h-20 w-20 overflow-hidden rounded-full">
+                      <img
+                        src={profile.avatar}
+                        alt={profile.name}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <h1 className="text-3xl font-bold text-text-primary">
+                        {profile.name}
+                      </h1>
+                      <p className="text-text-secondary">{profile.role}</p>
+                      <p className="text-sm text-text-secondary">
+                        Member since {profile.joinedDate}
+                      </p>
+                    </div>
                   </div>
-                  
-                  <div className="space-y-4 flex-1">
-                    <div className="grid gap-2">
-                      <Label htmlFor="name">Name</Label>
-                      <Input 
-                        id="name" 
-                        value={name} 
-                        onChange={(e) => setName(e.target.value)} 
-                        placeholder="Your display name"
-                      />
-                    </div>
-                    
-                    <div className="grid gap-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input 
-                        id="email" 
-                        value={user.email} 
-                        disabled 
-                        placeholder="Your email address"
-                      />
-                      <p className="text-sm text-gray-500">Email address cannot be changed</p>
-                    </div>
-                    
-                    <div className="grid gap-2">
-                      <Label htmlFor="avatar-url">Avatar URL</Label>
-                      <Input 
-                        id="avatar-url" 
-                        value={avatarUrl} 
-                        onChange={(e) => setAvatarUrl(e.target.value)} 
-                        placeholder="https://example.com/avatar.jpg"
-                      />
-                      <p className="text-sm text-gray-500">Optional: Link to your avatar image</p>
-                    </div>
-                    
-                    <Button onClick={handleUpdateProfile}>
-                      Save Profile
-                    </Button>
-                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsEditing(!isEditing)}
+                  >
+                    {isEditing ? (
+                      <>
+                        <Save className="mr-2 h-4 w-4" />
+                        Save Changes
+                      </>
+                    ) : (
+                      <>
+                        <Edit className="mr-2 h-4 w-4" />
+                        Edit Profile
+                      </>
+                    )}
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -153,8 +185,12 @@ const Profile = () => {
                     <Label htmlFor="default-model">Default AI Model</Label>
                     <select 
                       id="default-model"
-                      value={defaultModel}
-                      onChange={(e) => setDefaultModel(e.target.value)}
+                      value={user?.preferences?.defaultModelType || "deepseek/deepseek-chat-v3-0324:free"}
+                      onChange={(e) => updatePreferences({ 
+                        defaultModelType: e.target.value,
+                        defaultTemperature: user?.preferences?.defaultTemperature || 0.7,
+                        theme: user?.preferences?.theme || "light"
+                      })}
                       className="w-full p-2 border rounded-md"
                     >
                       <option value="deepseek/deepseek-chat-v3-0324:free">DeepSeek Chat v3</option>
@@ -171,11 +207,15 @@ const Profile = () => {
                         min="0" 
                         max="1" 
                         step="0.1"
-                        value={defaultTemperature}
-                        onChange={(e) => setDefaultTemperature(parseFloat(e.target.value))}
+                        value={user?.preferences?.defaultTemperature || 0.7}
+                        onChange={(e) => updatePreferences({ 
+                          defaultModelType: user?.preferences?.defaultModelType || "deepseek/deepseek-chat-v3-0324:free",
+                          defaultTemperature: parseFloat(e.target.value),
+                          theme: user?.preferences?.theme || "light"
+                        })}
                         className="w-full"
                       />
-                      <span>{defaultTemperature}</span>
+                      <span>{user?.preferences?.defaultTemperature || 0.7}</span>
                     </div>
                     <p className="text-sm text-gray-500">Controls randomness: lower is more deterministic, higher is more creative</p>
                   </div>
@@ -184,8 +224,12 @@ const Profile = () => {
                     <Label htmlFor="theme">Theme</Label>
                     <select 
                       id="theme"
-                      value={theme}
-                      onChange={(e) => setTheme(e.target.value)}
+                      value={user?.preferences?.theme || "light"}
+                      onChange={(e) => updatePreferences({ 
+                        defaultModelType: user?.preferences?.defaultModelType || "deepseek/deepseek-chat-v3-0324:free",
+                        defaultTemperature: user?.preferences?.defaultTemperature || 0.7,
+                        theme: e.target.value
+                      })}
                       className="w-full p-2 border rounded-md"
                     >
                       <option value="light">Light</option>
@@ -194,7 +238,11 @@ const Profile = () => {
                     </select>
                   </div>
                   
-                  <Button onClick={handleUpdatePreferences}>
+                  <Button onClick={() => updatePreferences({ 
+                    defaultModelType: user?.preferences?.defaultModelType || "deepseek/deepseek-chat-v3-0324:free",
+                    defaultTemperature: user?.preferences?.defaultTemperature || 0.7,
+                    theme: user?.preferences?.theme || "light"
+                  })}>
                     Save Preferences
                   </Button>
                 </div>
