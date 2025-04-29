@@ -1,9 +1,12 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { USER_ROLES } from "@/config/constants";
 
 export type User = {
+  id: string;
   email: string;
   name: string;
+  role: string;
   avatar?: string;
   preferences?: {
     theme?: string;
@@ -15,9 +18,10 @@ export type User = {
 
 type UserContextType = {
   user: User | null;
-  login: (email: string, name: string) => void;
+  login: (email: string, name: string, role?: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   updateProfile: (userData: Partial<User>) => void;
   updatePreferences: (preferences: Partial<User['preferences']>) => void;
   toggleFavorite: (promptId: string) => boolean; // Returns true if added, false if removed
@@ -42,10 +46,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const login = (email: string, name: string) => {
+  const login = (email: string, name: string, role: string = USER_ROLES.USER) => {
     const newUser = { 
+      id: crypto.randomUUID(),
       email, 
       name,
+      role,
       preferences: {
         theme: 'light',
         defaultModelType: 'deepseek/deepseek-chat-v3-0324:free',
@@ -106,12 +112,16 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return !!user?.favorites?.includes(promptId);
   };
 
+  // Check if the current user has admin role
+  const isAdmin = !!user && user.role === USER_ROLES.ADMIN;
+
   return (
     <UserContext.Provider value={{ 
       user, 
       login, 
       logout, 
       isAuthenticated: !!user,
+      isAdmin,
       updateProfile,
       updatePreferences,
       toggleFavorite,

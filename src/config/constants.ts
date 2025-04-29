@@ -1,10 +1,11 @@
-
 export const API_KEYS = {
-  OPENROUTER_API_KEY: "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"
+  // Use environment variable if available, otherwise fall back to the default key
+  OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || "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"
 };
 
+// Default model configuration
 export const API_CONFIG = {
-  MODEL: "deepseek/deepseek-chat-v3-0324:free"
+  MODEL: process.env.DEFAULT_MODEL || "deepseek/deepseek-chat-v3-0324:free"
 };
 
 // Color palette for the UI
@@ -116,4 +117,18 @@ export const PROMPT_GUIDELINES = {
     COMPARISON: "Compare and contrast [A] and [B] in terms of [aspects]",
     CREATIVE: "Generate a creative [content type] about [topic]"
   }
+};
+
+// User roles and permissions
+export const USER_ROLES = {
+  USER: 'user',
+  ADMIN: 'admin'
+};
+
+// Application routes
+export const ROUTES = {
+  HOME: '/',
+  GALLERY: '/gallery',
+  ADMIN: '/admin',
+  PROFILE: '/profile'
 };

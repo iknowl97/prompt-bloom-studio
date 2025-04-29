@@ -90,7 +90,7 @@ export const generatePrompt = async (
       headers: {
         "Authorization": `Bearer ${API_KEYS.OPENROUTER_API_KEY}`,
         "HTTP-Referer": window.location.origin,
-        "X-Title": "AiKnowledge Prompt Generator",
+        "X-Title": "Prompt Bloom Studio",
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
