@@ -18,19 +18,34 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/use-user";
-import { User, Settings, LogOut } from "lucide-react";
+import { User, Settings, LogOut, Palette } from "lucide-react";
+import { COLORS } from "@/config/constants";
 
 export function ProfileMenu() {
-  const { user, logout, updateProfile, isAuthenticated } = useUser();
+  const { user, logout, updateProfile, isAuthenticated, updatePreferences } = useUser();
   const { toast } = useToast();
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [preferencesDialogOpen, setPreferencesDialogOpen] = useState(false);
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
+  const [theme, setTheme] = useState(user?.preferences?.theme || "light");
+  const [defaultModel, setDefaultModel] = useState(
+    user?.preferences?.defaultModelType || "deepseek/deepseek-chat-v3-0324:free"
+  );
+  const [defaultTemperature, setDefaultTemperature] = useState(
+    user?.preferences?.defaultTemperature || 0.7
+  );
 
   const handleUpdateProfile = () => {
     updateProfile({ name, email });
@@ -40,6 +55,27 @@ export function ProfileMenu() {
       description: "Your profile information has been updated successfully.",
     });
   };
+
+  const handleUpdatePreferences = () => {
+    updatePreferences({
+      theme,
+      defaultModelType: defaultModel,
+      defaultTemperature: parseFloat(defaultTemperature.toString()),
+    });
+    setPreferencesDialogOpen(false);
+    toast({
+      title: "Preferences Updated",
+      description: "Your preferences have been updated successfully.",
+    });
+  };
+
+  const availableModels = [
+    { id: "deepseek/deepseek-chat-v3-0324:free", name: "DeepSeek Chat v3" },
+    { id: "anthropic/claude-3-opus:free", name: "Claude 3 Opus" },
+    { id: "openai/gpt-4o:free", name: "GPT-4o" },
+    { id: "google/gemini-2.5-pro-exp-03-25:free", name: "Google Gemini Pro" },
+    { id: "meta/llama-3-70b-instruct:free", name: "Meta Llama 3 70B" },
+  ];
 
   if (!isAuthenticated) return null;
 
@@ -54,7 +90,14 @@ export function ProfileMenu() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">{user?.name}</p>
+              <p className="text-xs leading-none text-muted-foreground">
+                {user?.email}
+              </p>
+            </div>
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem onClick={() => setProfileDialogOpen(true)}>
@@ -111,6 +154,77 @@ export function ProfileMenu() {
           <DialogFooter>
             <Button type="submit" onClick={handleUpdateProfile}>
               Save changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Preferences Dialog */}
+      <Dialog open={preferencesDialogOpen} onOpenChange={setPreferencesDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Preferences</DialogTitle>
+            <DialogDescription>
+              Customize your prompt generation experience
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="theme" className="text-right">
+                Theme
+              </Label>
+              <Select value={theme} onValueChange={setTheme}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select theme" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="light">Light</SelectItem>
+                  <SelectItem value="dark">Dark</SelectItem>
+                  <SelectItem value="system">System</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="default-model" className="text-right">
+                Default Model
+              </Label>
+              <Select value={defaultModel} onValueChange={setDefaultModel}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select model" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableModels.map((model) => (
+                    <SelectItem key={model.id} value={model.id}>
+                      {model.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="temperature" className="text-right">
+                Temperature
+              </Label>
+              <div className="col-span-3 flex items-center space-x-2">
+                <Input
+                  id="temperature"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={defaultTemperature}
+                  onChange={(e) => setDefaultTemperature(parseFloat(e.target.value))}
+                  className="w-full"
+                />
+                <span className="w-12 text-center">
+                  {defaultTemperature.toFixed(1)}
+                </span>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="submit" onClick={handleUpdatePreferences}>
+              Save preferences
             </Button>
           </DialogFooter>
         </DialogContent>

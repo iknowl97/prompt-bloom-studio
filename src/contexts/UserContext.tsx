@@ -10,6 +10,7 @@ export type User = {
     defaultModelType?: string;
     defaultTemperature?: number;
   };
+  favorites?: string[]; // Array of saved prompt IDs that are favorited
 };
 
 type UserContextType = {
@@ -19,6 +20,8 @@ type UserContextType = {
   isAuthenticated: boolean;
   updateProfile: (userData: Partial<User>) => void;
   updatePreferences: (preferences: Partial<User['preferences']>) => void;
+  toggleFavorite: (promptId: string) => boolean; // Returns true if added, false if removed
+  isFavorited: (promptId: string) => boolean;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -47,7 +50,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         theme: 'light',
         defaultModelType: 'deepseek/deepseek-chat-v3-0324:free',
         defaultTemperature: 0.7,
-      } 
+      },
+      favorites: []
     };
     setUser(newUser);
     localStorage.setItem("user", JSON.stringify(newUser));
@@ -76,6 +80,32 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem("user", JSON.stringify(updatedUser));
   };
 
+  const toggleFavorite = (promptId: string): boolean => {
+    if (!user) return false;
+    
+    const favorites = user.favorites || [];
+    let newFavorites: string[];
+    let added = false;
+    
+    if (favorites.includes(promptId)) {
+      newFavorites = favorites.filter(id => id !== promptId);
+      added = false;
+    } else {
+      newFavorites = [...favorites, promptId];
+      added = true;
+    }
+    
+    const updatedUser = { ...user, favorites: newFavorites };
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    
+    return added;
+  };
+  
+  const isFavorited = (promptId: string): boolean => {
+    return !!user?.favorites?.includes(promptId);
+  };
+
   return (
     <UserContext.Provider value={{ 
       user, 
@@ -83,7 +113,9 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       logout, 
       isAuthenticated: !!user,
       updateProfile,
-      updatePreferences
+      updatePreferences,
+      toggleFavorite,
+      isFavorited
     }}>
       {children}
     </UserContext.Provider>

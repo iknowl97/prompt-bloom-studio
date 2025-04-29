@@ -10,7 +10,14 @@ import NotFound from "./pages/NotFound";
 import { PromptProvider } from "./contexts/PromptContext";
 import { UserProvider } from "./contexts/UserContext";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -18,7 +25,7 @@ const App = () => (
       <UserProvider>
         <PromptProvider>
           <Toaster />
-          <Sonner />
+          <Sonner position="top-right" expand closeButton richColors />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />

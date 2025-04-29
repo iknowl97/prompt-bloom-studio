@@ -24,15 +24,19 @@ const Index = () => {
   } | null>(null);
   
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const { isAuthenticated } = useUser();
+  const { isAuthenticated, user } = useUser();
 
   const handleGenerate = (prompt: string, settings: any) => {
+    // Use user preferences for default settings if available
+    const defaultTemperature = user?.preferences?.defaultTemperature || 0.7;
+    const defaultModel = user?.preferences?.defaultModelType || "deepseek/deepseek-chat-v3-0324:free";
+    
     setPromptData({
       prompt,
       settings: {
         ...settings,
-        temperature: settings.temperature || 0.7,
-        modelType: settings.modelType || "deepseek/deepseek-chat-v3-0324:free"
+        temperature: settings.temperature || defaultTemperature,
+        modelType: settings.modelType || defaultModel
       }
     });
   };
@@ -105,19 +109,19 @@ const Index = () => {
                 </Link>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="space-y-2 bg-white p-4 rounded-lg border border-prompt-100">
+                <div className="space-y-2 bg-white p-4 rounded-lg border border-prompt-100 hover:shadow-md transition-shadow duration-200">
                   <h4 className="font-medium text-gray-700">Save Time</h4>
                   <p className="text-gray-600 text-sm">
                     Quickly generate optimized prompts without trial and error.
                   </p>
                 </div>
-                <div className="space-y-2 bg-white p-4 rounded-lg border border-prompt-100">
+                <div className="space-y-2 bg-white p-4 rounded-lg border border-prompt-100 hover:shadow-md transition-shadow duration-200">
                   <h4 className="font-medium text-gray-700">Better Results</h4>
                   <p className="text-gray-600 text-sm">
                     Get more accurate, relevant AI outputs with expertly crafted prompts.
                   </p>
                 </div>
-                <div className="space-y-2 bg-white p-4 rounded-lg border border-prompt-100">
+                <div className="space-y-2 bg-white p-4 rounded-lg border border-prompt-100 hover:shadow-md transition-shadow duration-200">
                   <h4 className="font-medium text-gray-700">Organize & Share</h4>
                   <p className="text-gray-600 text-sm">
                     Save, organize, and download your prompts in various formats.
