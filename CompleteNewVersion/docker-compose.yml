@@ -1,0 +1,50 @@
+
+services:
+  prompt-bloom-studio:
+    build:
+      context: .
+      dockerfile: ./PromptCrafter-Docker/Dockerfile
+      args:
+        NODE_ENV: production
+        VITE_OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-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}
+        VITE_DEFAULT_MODEL: ${DEFAULT_MODEL:-deepseek/deepseek-chat-v3-0324:free}
+    container_name: prompt-bloom-studio
+    ports:
+      - "7777:80"
+      - "7778:443"
+    restart: unless-stopped
+    environment:
+      - DOMAIN=${DOMAIN:-localhost}
+      - VITE_OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-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}
+      - VITE_DEFAULT_MODEL=${DEFAULT_MODEL:-deepseek/deepseek-chat-v3-0324:free}
+    env_file:
+      - .env
+    volumes:
+      - ./PromptCrafter-Docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - prompt_data:/app/data
+    networks:
+      - prompt-network
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          cpus: "0.1"
+          memory: 128M
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  prompt-network:
+    driver: bridge
+
+volumes:
+  prompt_data:
+    driver: local
