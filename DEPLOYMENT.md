@@ -99,6 +99,7 @@ docker inspect --format='{{.State.Health.Status}}' prompt-bloom-studio
 - **Container not starting**: Check logs with `docker logs prompt-bloom-studio`
 - **Health check failing**: Verify nginx configuration and network settings
 - **Environment variables**: Ensure all required variables are set correctly
+- **Permission denied errors**: If you see errors like `mkdir() "/var/cache/nginx/client_temp" failed (13: Permission denied)`, ensure you're using the latest Docker configuration which fixes these permission issues by properly setting up cache directories and permissions for the non-root user
 - **Authentication issues**: If you're having trouble with user authentication, check browser console logs and make sure localStorage is enabled
 - **Prompt generation errors**: Verify the OpenRouter API key is correctly configured in your `.env` file
 

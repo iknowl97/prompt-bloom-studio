@@ -34,6 +34,7 @@ COPY --from=build --chown=appuser:appgroup /app/dist /usr/share/nginx/html
 
 # Copy custom nginx config and SSL setup script
 COPY PromptCrafter-Docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY PromptCrafter-Docker/custom-nginx.conf /etc/nginx/nginx.conf
 COPY PromptCrafter-Docker/ssl-setup.sh /tmp/ssl-setup.sh
 
 # Make SSL setup script executable and run it
@@ -46,11 +47,13 @@ RUN mkdir -p /etc/nginx/ssl && \
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
 
-# Security: Drop capabilities and run as non-root
-RUN chmod -R 755 /usr/share/nginx/html && \
-  chmod -R 755 /var/cache/nginx && \
+# Security: Create necessary directories and set proper permissions
+RUN mkdir -p /var/cache/nginx/client_temp /var/cache/nginx/proxy_temp /var/cache/nginx/fastcgi_temp /var/cache/nginx/uwsgi_temp /var/cache/nginx/scgi_temp && \
+  chmod -R 755 /usr/share/nginx/html && \
+  chmod -R 1777 /var/cache/nginx && \
   chmod -R 755 /var/log/nginx && \
-  chmod -R 755 /etc/nginx/conf.d
+  chmod -R 755 /etc/nginx/conf.d && \
+  chown -R appuser:appgroup /var/cache/nginx /var/log/nginx /var/run
 
 # Expose port 80
 EXPOSE 80
@@ -58,5 +61,5 @@ EXPOSE 80
 # Set user
 USER appuser
 
-# Start nginx
+# Start nginx with custom configuration for non-root user
 CMD ["nginx", "-g", "daemon off;"]
