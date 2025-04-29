@@ -64,7 +64,9 @@ export const generatePrompt = async (
   promptText: string, 
   purposeContext: string = "", 
   selectedPurposes: string[] = [],
-  mode: "create" | "enhance" = "create"
+  mode: "create" | "enhance" = "create",
+  temperature: number = 0.7,
+  modelType: string = API_CONFIG.MODEL
 ): Promise<string> => {
   try {
     const purposeSpecificPrompt = getPurposeSpecificPrompt(selectedPurposes);
@@ -85,6 +87,9 @@ export const generatePrompt = async (
       }
     ];
 
+    console.log("Using API key:", API_KEYS.OPENROUTER_API_KEY);
+    console.log("Using model:", modelType);
+
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -94,9 +99,9 @@ export const generatePrompt = async (
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: API_CONFIG.MODEL,
+        model: modelType,
         messages: messages,
-        temperature: 0.7,
+        temperature: temperature,
       })
     });
 

@@ -6,6 +6,8 @@ services:
       dockerfile: ./PromptCrafter-Docker/Dockerfile
       args:
         NODE_ENV: production
+        VITE_OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-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}
+        VITE_DEFAULT_MODEL: ${DEFAULT_MODEL:-deepseek/deepseek-chat-v3-0324:free}
     container_name: prompt-bloom-studio
     ports:
       - "7777:80"
@@ -13,8 +15,8 @@ services:
     restart: unless-stopped
     environment:
       - DOMAIN=${DOMAIN:-localhost}
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-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}
-      - DEFAULT_MODEL=${DEFAULT_MODEL:-deepseek/deepseek-chat-v3-0324:free}
+      - VITE_OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-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}
+      - VITE_DEFAULT_MODEL=${DEFAULT_MODEL:-deepseek/deepseek-chat-v3-0324:free}
     env_file:
       - .env
     volumes:

@@ -1,3 +1,4 @@
+
 # Build stage
 FROM node:18-alpine AS build
 
@@ -10,10 +11,16 @@ COPY package*.json ./
 # Install all dependencies including devDependencies for build
 RUN npm ci && npm cache clean --force
 
+# Set environment variables for build
+ARG VITE_OPENROUTER_API_KEY
+ARG VITE_DEFAULT_MODEL
+ENV VITE_OPENROUTER_API_KEY=$VITE_OPENROUTER_API_KEY
+ENV VITE_DEFAULT_MODEL=$VITE_DEFAULT_MODEL
+
 # Copy all files
 COPY . ./
 
-# Build the app
+# Build the app with environment variables
 RUN npm run build
 
 # Production stage

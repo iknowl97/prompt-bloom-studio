@@ -10,7 +10,8 @@ import { generatePrompt } from "@/utils/openRouterApi";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PromptModeSelector } from "./PromptModeSelector";
 import { AuthModal } from "./AuthModal";
-import { useUser } from "@/contexts/UserContext";
+import { useUser } from "@/hooks/use-user";
+import { API_CONFIG } from "@/config/constants";
 
 const promptPurposes = [
   { id: "chat", label: "AI chat model", icon: <MessageSquare className="h-4 w-4" /> },
@@ -41,7 +42,7 @@ const getModelSuggestion = (selectedPurposes: string[]) => {
     name: "DeepSeek V3",
     description: "Fast and efficient for standard tasks",
     icon: <MessageSquare className="h-5 w-5 text-green-500" />,
-    modelId: "deepseek/deepseek-chat-v3-0324:free"
+    modelId: API_CONFIG.MODEL
   };
 };
 
@@ -59,7 +60,7 @@ export function PromptForm({
   const [requiresAuth, setRequiresAuth] = useState(false);
   const [placeholderText, setPlaceholderText] = useState("");
   const { toast } = useToast();
-  const { isAuthenticated } = useUser();
+  const { isAuthenticated, user } = useUser();
 
   useEffect(() => {
     updatePlaceholder(selectedPurposes, promptMode);
@@ -125,16 +126,28 @@ export function PromptForm({
         purposeContext = "Enhance, improve, and expand the following AI prompt while keeping its original intent. Make it more effective and comprehensive. ";
         setOriginalPrompt(prompt);
       }
-      
-      const generatedPrompt = await generatePrompt(prompt, purposeContext, selectedPurposes, promptMode || "create");
+
+      // Use user preferences for default settings if available
+      const defaultTemperature = user?.preferences?.defaultTemperature || 0.7;
+      const defaultModel = user?.preferences?.defaultModelType || API_CONFIG.MODEL;
       
       const modelSuggestion = getModelSuggestion(selectedPurposes);
+      const modelToUse = modelSuggestion.modelId;
+      
+      const generatedPrompt = await generatePrompt(
+        prompt, 
+        purposeContext, 
+        selectedPurposes, 
+        promptMode || "create",
+        defaultTemperature,
+        modelToUse
+      );
       
       onGenerate(promptMode === "enhance" ? originalPrompt : prompt, { 
         generatedPrompt,
         selectedPurposes,
-        temperature: 0.7,
-        modelType: modelSuggestion.modelId
+        temperature: defaultTemperature,
+        modelType: modelToUse
       });
     } catch (error) {
       console.error("Failed to generate prompt:", error);
