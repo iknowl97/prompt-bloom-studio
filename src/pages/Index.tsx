@@ -8,8 +8,9 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { GalleryHorizontal, Sparkles } from "lucide-react";
-import { useUser } from "@/contexts/UserContext";
+import { useUser } from "@/hooks/use-user";
 import { AuthModal } from "@/components/AuthModal";
+import { ProfileMenu } from "@/components/ProfileMenu";
 
 const Index = () => {
   const [promptData, setPromptData] = useState<{
@@ -23,7 +24,7 @@ const Index = () => {
   } | null>(null);
   
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const { isAuthenticated, user } = useUser();
+  const { isAuthenticated } = useUser();
 
   const handleGenerate = (prompt: string, settings: any) => {
     setPromptData({
@@ -65,9 +66,7 @@ const Index = () => {
                     Sign In
                   </Button>
                 ) : (
-                  <p className="text-sm text-gray-600">
-                    Welcome, <span className="font-medium">{user?.name}</span>
-                  </p>
+                  <ProfileMenu />
                 )}
                 
                 <Link to="/gallery">

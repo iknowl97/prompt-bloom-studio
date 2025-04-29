@@ -4,8 +4,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { usePrompts, SavedPrompt } from "@/contexts/PromptContext";
+import { usePrompts, SavedPrompt, Tag } from "@/contexts/PromptContext";
 import { useToast } from "@/hooks/use-toast";
+import { X, Plus } from "lucide-react";
 
 interface SavePromptDialogProps {
   open: boolean;
@@ -19,10 +20,20 @@ interface SavePromptDialogProps {
 
 export function SavePromptDialog({ open, onOpenChange, prompt, settings }: SavePromptDialogProps) {
   const [title, setTitle] = React.useState(`Prompt ${new Date().toLocaleString()}`);
-  const [tags, setTags] = React.useState("");
-  const { savePrompt, folders } = usePrompts();
+  const [tagInput, setTagInput] = React.useState("");
+  const { savePrompt, folders, suggestTagsFromContent, createTag } = usePrompts();
   const [selectedFolder, setSelectedFolder] = React.useState<string | undefined>(undefined);
+  const [selectedTags, setSelectedTags] = React.useState<Tag[]>([]);
+  const [suggestedTags, setSuggestedTags] = React.useState<Tag[]>([]);
   const { toast } = useToast();
+
+  // Generate tag suggestions when dialog opens
+  React.useEffect(() => {
+    if (open && prompt) {
+      const suggestions = suggestTagsFromContent(prompt);
+      setSuggestedTags(suggestions);
+    }
+  }, [open, prompt, suggestTagsFromContent]);
 
   const handleSave = () => {
     savePrompt({
@@ -30,20 +41,49 @@ export function SavePromptDialog({ open, onOpenChange, prompt, settings }: SaveP
       content: prompt,
       settings,
       folderId: selectedFolder,
-      tags: tags.split(",").map(tag => tag.trim()).filter(Boolean),
+      tags: selectedTags,
     });
     toast({
       title: "Prompt saved",
       description: "Your prompt has been saved to your gallery.",
     });
     onOpenChange(false);
+    resetForm();
+  };
+
+  const resetForm = () => {
     setTitle(`Prompt ${new Date().toLocaleString()}`);
-    setTags("");
+    setTagInput("");
+    setSelectedTags([]);
     setSelectedFolder(undefined);
   };
 
+  const handleAddTag = () => {
+    if (!tagInput.trim()) return;
+    
+    const newTag = createTag(tagInput.trim());
+    setSelectedTags(prev => [...prev, newTag]);
+    setTagInput("");
+  };
+
+  const handleRemoveTag = (tagId: string) => {
+    setSelectedTags(prev => prev.filter(tag => tag.id !== tagId));
+  };
+
+  const handleAddSuggestedTag = (tag: Tag) => {
+    // Don't add if already selected
+    if (selectedTags.some(t => t.name.toLowerCase() === tag.name.toLowerCase())) return;
+    
+    setSelectedTags(prev => [...prev, tag]);
+    // Remove from suggestions
+    setSuggestedTags(prev => prev.filter(t => t.id !== tag.id));
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(newOpen) => {
+      if (!newOpen) resetForm();
+      onOpenChange(newOpen);
+    }}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Save Prompt</DialogTitle>
@@ -63,18 +103,75 @@ export function SavePromptDialog({ open, onOpenChange, prompt, settings }: SaveP
               className="col-span-3"
             />
           </div>
+          
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="tags" className="text-right">
+            <Label className="text-right">
               Tags
             </Label>
-            <Input
-              id="tags"
-              placeholder="AI, writing, creative, etc."
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              className="col-span-3"
-            />
+            <div className="col-span-3 space-y-2">
+              <div className="flex flex-wrap gap-2">
+                {selectedTags.map(tag => (
+                  <span 
+                    key={tag.id} 
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${tag.color.bgColor} ${tag.color.textColor}`}
+                  >
+                    {tag.name}
+                    <button 
+                      type="button" 
+                      onClick={() => handleRemoveTag(tag.id)}
+                      className="ml-1 inline-flex items-center justify-center rounded-full focus:outline-none"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Add a tag..."
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddTag();
+                    }
+                  }}
+                  className="flex-1"
+                />
+                <Button 
+                  type="button" 
+                  onClick={handleAddTag}
+                  size="sm"
+                  variant="outline"
+                  className="flex-shrink-0"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              {suggestedTags.length > 0 && (
+                <>
+                  <div className="text-xs text-gray-500 mt-2">Suggested tags:</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {suggestedTags.map(tag => (
+                      <button 
+                        key={tag.id}
+                        type="button" 
+                        onClick={() => handleAddSuggestedTag(tag)}
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${tag.color.bgColor} ${tag.color.textColor} hover:opacity-90`}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        {tag.name}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
+          
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="folder" className="text-right">
               Folder
