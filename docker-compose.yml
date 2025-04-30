@@ -17,6 +17,10 @@ services:
       - DOMAIN=${DOMAIN:-localhost}
       - VITE_OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-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}
       - VITE_DEFAULT_MODEL=${DEFAULT_MODEL:-deepseek/deepseek-chat-v3-0324:free}
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=prompthub
+      - POSTGRES_USER=promptuser
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-strongpassword}
     env_file:
       - .env
     volumes:
@@ -24,6 +28,8 @@ services:
       - prompt_data:/app/data
     networks:
       - prompt-network
+    depends_on:
+      - db
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:80/"]
       interval: 30s
@@ -41,10 +47,32 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  db:
+    image: postgres:15-alpine
+    container_name: prompthub-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=prompthub
+      - POSTGRES_USER=promptuser
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-strongpassword}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - prompt-network
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U promptuser -d prompthub"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 networks:
   prompt-network:
     driver: bridge
 
 volumes:
   prompt_data:
+    driver: local
+  postgres_data:
     driver: local

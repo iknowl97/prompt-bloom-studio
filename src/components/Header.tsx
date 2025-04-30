@@ -2,8 +2,19 @@
 import { Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { AuthModal } from "@/components/AuthModal";
+import { useUser } from "@/hooks/use-user";
+import ProfileMenu from "@/components/ProfileMenu";
 
 export function Header() {
+  const { user, isAuthenticated } = useUser();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const handleAuthSuccess = () => {
+    console.log("Authentication successful");
+  };
+
   return (
     <div className="w-full py-6 bg-[#1a1a1a] shadow-lg">
       <div className="container mx-auto px-4">
@@ -21,7 +32,18 @@ export function Header() {
             <a href="#" className="text-[#8E9196] hover:text-white transition-colors">Guide</a>
             <a href="#" className="text-[#8E9196] hover:text-white transition-colors">About</a>
           </div>
-          <div className="hidden md:flex">
+          <div className="hidden md:flex items-center space-x-4">
+            {isAuthenticated ? (
+              <ProfileMenu />
+            ) : (
+              <Button 
+                variant="ghost" 
+                className="text-white hover:text-[#A7C7E7]"
+                onClick={() => setIsAuthModalOpen(true)}
+              >
+                Sign In
+              </Button>
+            )}
             <Button asChild className="bg-[#A7C7E7] hover:bg-[#A7C7E7]/80 text-[#2D3748] font-medium">
               <Link to="/custom-prompt-builder">
                 Create Prompt
@@ -30,6 +52,12 @@ export function Header() {
           </div>
         </div>
       </div>
+      
+      <AuthModal 
+        open={isAuthModalOpen} 
+        onOpenChange={setIsAuthModalOpen} 
+        onSuccess={handleAuthSuccess} 
+      />
     </div>
   );
 }

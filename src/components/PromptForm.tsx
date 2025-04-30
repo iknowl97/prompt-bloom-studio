@@ -1,264 +1,160 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
-import { MessageSquare, Image, Video, AudioLines, Bot, Settings2, Rocket, Zap } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DEFAULT_SETTINGS, MODEL_TYPES } from "@/config/constants";
 import { useToast } from "@/hooks/use-toast";
-import { generatePrompt } from "@/utils/openRouterApi";
-import { Checkbox } from "@/components/ui/checkbox";
-import { PromptModeSelector } from "./PromptModeSelector";
-import { AuthModal } from "./AuthModal";
+import { usePrompts } from "@/contexts/PromptContext";
+import { AuthModal } from "@/components/AuthModal";
 import { useUser } from "@/hooks/use-user";
-import { API_CONFIG } from "@/config/constants";
 
-const promptPurposes = [
-  { id: "chat", label: "AI chat model", icon: <MessageSquare className="h-4 w-4" /> },
-  { id: "image", label: "Image generation", icon: <Image className="h-4 w-4" /> },
-  { id: "video", label: "Video generation", icon: <Video className="h-4 w-4" /> },
-  { id: "audio", label: "Audio generation", icon: <AudioLines className="h-4 w-4" /> },
-  { id: "agent", label: "AI agent prompts", icon: <Bot className="h-4 w-4" /> },
-  { id: "advanced", label: "Advanced AI prompts", icon: <Settings2 className="h-4 w-4" /> },
-];
-
-const getModelSuggestion = (selectedPurposes: string[]) => {
-  if (selectedPurposes.includes("advanced") || selectedPurposes.length > 2) {
-    return {
-      name: "Claude 3 Opus",
-      description: "Best for complex, multi-purpose tasks",
-      icon: <Rocket className="h-5 w-5 text-purple-500" />,
-      modelId: "anthropic/claude-3-opus:free"
-    };
-  } else if (selectedPurposes.includes("image") || selectedPurposes.includes("video")) {
-    return {
-      name: "GPT-4o",
-      description: "Optimal for visual and creative tasks",
-      icon: <Zap className="h-5 w-5 text-blue-500" />,
-      modelId: "openai/gpt-4o:free"
-    };
-  }
-  return {
-    name: "DeepSeek V3",
-    description: "Fast and efficient for standard tasks",
-    icon: <MessageSquare className="h-5 w-5 text-green-500" />,
-    modelId: API_CONFIG.MODEL
-  };
+type PromptFormProps = {
+  onGenerate: (prompt: string, settings: { temperature: number; modelType: string }) => void;
 };
 
-export function PromptForm({ 
-  onGenerate
-}: { 
-  onGenerate: (prompt: string, settings: any) => void;
-}) {
-  const [prompt, setPrompt] = useState("");
-  const [originalPrompt, setOriginalPrompt] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [selectedPurposes, setSelectedPurposes] = useState<string[]>([]);
-  const [promptMode, setPromptMode] = useState<"create" | "enhance" | null>(null);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [requiresAuth, setRequiresAuth] = useState(false);
-  const [placeholderText, setPlaceholderText] = useState("");
+export function PromptForm({ onGenerate }: PromptFormProps) {
+  const [promptText, setPromptText] = useState("");
+  const [temperature, setTemperature] = useState(DEFAULT_SETTINGS.temperature);
+  const [modelType, setModelType] = useState(DEFAULT_SETTINGS.modelType);
+  const [generatedPrompt, setGeneratedPrompt] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const { savePrompt } = usePrompts();
+  const { isAuthenticated } = useUser();
   const { toast } = useToast();
-  const { isAuthenticated, user } = useUser();
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
-  useEffect(() => {
-    updatePlaceholder(selectedPurposes, promptMode);
-  }, [selectedPurposes, promptMode]);
-
-  const updatePlaceholder = (purposes: string[], mode: "create" | "enhance" | null) => {
-    if (!mode) {
-      setPlaceholderText("First select a prompt mode above...");
-      return;
-    }
-
-    if (mode === "enhance") {
-      setPlaceholderText("Paste your existing prompt here to enhance it...");
-      return;
-    }
-    
-    if (purposes.length === 0) {
-      setPlaceholderText("Describe what kind of prompt you want to generate...");
-      return;
-    }
-
-    const examples: Record<string, string> = {
-      chat: "Create a chatbot that helps users learn a new language...",
-      image: "Generate a breathtaking landscape with sunset colors...",
-      video: "Create a 30-second animation showcasing a product...",
-      audio: "Compose a calming meditation background track...",
-      agent: "Design an AI assistant that helps with task scheduling...",
-      advanced: "Create a complex workflow combining multiple AI models..."
-    };
-
-    const selectedExample = purposes[0] ? examples[purposes[0]] : examples.chat;
-    setPlaceholderText(selectedExample);
-  };
-
-  const handlePurposeToggle = (purposeId: string) => {
-    setSelectedPurposes(prev => {
-      const newPurposes = prev.includes(purposeId) 
-        ? prev.filter(id => id !== purposeId)
-        : [...prev, purposeId];
-      return newPurposes;
-    });
-  };
-
-  const handleSelectMode = (mode: "create" | "enhance") => {
-    setPromptMode(mode);
-    setPrompt("");
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsGenerating(true);
-    
+  const handleGenerate = useCallback(async () => {
+    setLoading(true);
     try {
-      let purposeContext = "";
-      
-      if (promptMode === "create") {
-        purposeContext = selectedPurposes.length > 0 
-          ? `Create a prompt specifically optimized for: ${selectedPurposes.map(id => 
-              promptPurposes.find(p => p.id === id)?.label
-            ).join(", ")}. `
-          : "";
-      } else if (promptMode === "enhance") {
-        purposeContext = "Enhance, improve, and expand the following AI prompt while keeping its original intent. Make it more effective and comprehensive. ";
-        setOriginalPrompt(prompt);
-      }
-
-      // Use user preferences for default settings if available
-      const defaultTemperature = user?.preferences?.defaultTemperature || 0.7;
-      const defaultModel = user?.preferences?.defaultModelType || API_CONFIG.MODEL;
-      
-      const modelSuggestion = getModelSuggestion(selectedPurposes);
-      const modelToUse = modelSuggestion.modelId;
-      
-      const generatedPrompt = await generatePrompt(
-        prompt, 
-        purposeContext, 
-        selectedPurposes, 
-        promptMode || "create",
-        defaultTemperature,
-        modelToUse
-      );
-      
-      onGenerate(promptMode === "enhance" ? originalPrompt : prompt, { 
-        generatedPrompt,
-        selectedPurposes,
-        temperature: defaultTemperature,
-        modelType: modelToUse
-      });
+      // Simulate an API call to generate the prompt
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const generated = `Generated prompt based on: ${promptText} with temperature ${temperature} and model ${modelType}`;
+      setGeneratedPrompt(generated);
+      onGenerate(generated, { temperature, modelType });
     } catch (error) {
-      console.error("Failed to generate prompt:", error);
+      console.error("Error generating prompt:", error);
       toast({
-        title: "Generation Failed",
-        description: error instanceof Error ? error.message : "Failed to generate prompt. Please try again.",
+        title: "Error generating prompt",
+        description: "Please try again later.",
         variant: "destructive",
       });
     } finally {
-      setIsGenerating(false);
+      setLoading(false);
     }
-  };
+  }, [promptText, temperature, modelType, onGenerate, toast]);
 
-  const handleSaveClick = () => {
+  const handleSavePrompt = () => {
     if (!isAuthenticated) {
-      setRequiresAuth(true);
-      setAuthModalOpen(true);
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to save prompts to your gallery",
+      });
+      setShowAuthModal(true);
+      return;
     }
-    // If authenticated, saving will proceed normally
-  };
+    
+    if (!generatedPrompt) {
+      toast({
+        title: "No prompt generated",
+        description: "Please generate a prompt before saving.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-  const modelSuggestion = getModelSuggestion(selectedPurposes);
+    savePrompt({
+      title: `Prompt ${new Date().toLocaleString()}`,
+      content: generatedPrompt,
+      settings: { temperature, modelType },
+    });
+
+    toast({
+      title: "Prompt saved!",
+      description: "Your prompt has been saved to your gallery.",
+    });
+  };
 
   return (
-    <Card className="w-full shadow-lg border-gray-300 bg-white">
-      <CardContent className="pt-6">
-        <div className="space-y-6">
-          <PromptModeSelector 
-            onSelectMode={handleSelectMode}
-            selectedMode={promptMode}
-          />
+    <>
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-lg font-semibold mb-4">Prompt Generator</h2>
 
-          {promptMode && (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {promptMode === "create" && (
-                <div className="space-y-3 bg-prompt-50 p-4 rounded-md border border-prompt-200">
-                  <Label className="font-medium text-gray-800">Prompt Purpose</Label>
-                  <p className="text-sm text-gray-600">Select the intended use for your prompt:</p>
-                  
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
-                    {promptPurposes.map((purpose) => (
-                      <div key={purpose.id} className="flex items-center space-x-2">
-                        <Checkbox 
-                          id={purpose.id}
-                          checked={selectedPurposes.includes(purpose.id)}
-                          onCheckedChange={() => handlePurposeToggle(purpose.id)}
-                          className="border-gray-400"
-                        />
-                        <Label 
-                          htmlFor={purpose.id} 
-                          className="flex items-center space-x-2 text-sm font-normal cursor-pointer hover:text-gray-900"
-                        >
-                          {purpose.icon}
-                          <span>{purpose.label}</span>
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="prompt">Enter Prompt Text</Label>
+            <Input
+              id="prompt"
+              placeholder="Write your prompt here"
+              value={promptText}
+              onChange={(e) => setPromptText(e.target.value)}
+            />
+          </div>
 
-              <div className="space-y-4">
-                <Label htmlFor="prompt" className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                  {modelSuggestion.icon}
-                  {promptMode === "create" ? "Your Prompt Idea" : "Your Existing Prompt"}
-                  <span className="text-sm font-normal text-gray-500">
-                    (Recommended: {modelSuggestion.name} - {modelSuggestion.description})
-                  </span>
-                </Label>
-                
-                <Textarea 
-                  id="prompt"
-                  placeholder={placeholderText}
-                  className="min-h-[120px] border-gray-300 focus:border-prompt-500 focus:ring-prompt-500 bg-white text-gray-900"
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full bg-gradient-to-r from-prompt-700 to-prompt-500 hover:from-prompt-800 hover:to-prompt-600 text-white font-medium py-2 rounded-md transition-all duration-200"
-                disabled={!prompt.trim() || isGenerating}
-              >
-                {modelSuggestion.icon}
-                {isGenerating 
-                  ? "Generating..." 
-                  : promptMode === "create" 
-                    ? "Generate Prompt" 
-                    : "Enhance Prompt"}
-              </Button>
-            </form>
-          )}
+          <div>
+            <Label htmlFor="temperature">Temperature</Label>
+            <Slider
+              id="temperature"
+              defaultValue={[temperature]}
+              max={1}
+              step={0.1}
+              onValueChange={(value) => setTemperature(value[0])}
+            />
+            <p className="text-sm text-muted-foreground">
+              Adjust the randomness of the generated prompt.
+            </p>
+          </div>
+
+          <div>
+            <Label htmlFor="modelType">Model Type</Label>
+            <Select value={modelType} onValueChange={setModelType}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a model" />
+              </SelectTrigger>
+              <SelectContent>
+                {MODEL_TYPES.map((model) => (
+                  <SelectItem key={model.value} value={model.value}>
+                    {model.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-      </CardContent>
 
-      <AuthModal 
-        open={authModalOpen} 
-        onOpenChange={setAuthModalOpen}
+        <div className="flex justify-between mt-4">
+          <Button onClick={handleGenerate} disabled={loading}>
+            {loading ? "Generating..." : "Generate Prompt"}
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            onClick={handleSavePrompt}
+            disabled={!generatedPrompt || loading}
+          >
+            Save to Gallery
+          </Button>
+        </div>
+
+        {generatedPrompt && (
+          <div className="mt-6 p-4 border rounded-md bg-gray-50">
+            <h3 className="text-md font-semibold">Generated Prompt:</h3>
+            <p>{generatedPrompt}</p>
+          </div>
+        )}
+      </div>
+      
+      <AuthModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
         onSuccess={() => {
-          if (requiresAuth) {
-            // Continue with saving after authentication
-            setRequiresAuth(false);
-            toast({
-              title: "Ready to save",
-              description: "You can now save prompts to your gallery!",
-            });
-          }
+          toast({
+            title: "Now you can save prompts!",
+            description: "Try saving your prompt again."
+          });
         }}
       />
-    </Card>
+    </>
   );
 }
