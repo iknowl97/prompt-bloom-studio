@@ -12,14 +12,29 @@ const StepIndicator = ({ number, title, isActive, isCompleted }: StepIndicatorPr
   return (
     <div className="flex flex-col items-center">
       <div
-        className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 
-          ${isActive ? 'bg-primary-500 text-white' : 
-          isCompleted ? 'bg-green-500 text-white' : 
-          'bg-gray-200 text-gray-500'}`}
+        className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 shadow-md transition-all duration-300 ${
+          isActive 
+            ? 'bg-[#A7C7E7] text-[#2D3748] scale-110' 
+            : isCompleted 
+              ? 'bg-[#C8E6C9] text-[#2D3748]' 
+              : 'bg-[#FFE5E5] text-[#2D3748] opacity-70'
+        }`}
       >
-        {isCompleted ? '✓' : number}
+        {isCompleted ? (
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        ) : (
+          <span className="text-lg font-bold">{number}</span>
+        )}
       </div>
-      <span className={`text-xs ${isActive ? 'text-primary-600 font-medium' : 'text-gray-500'}`}>
+      <span 
+        className={`text-sm ${
+          isActive 
+            ? 'text-[#2D3748] font-medium' 
+            : 'text-[#2D3748]/70'
+        } transition-all duration-300`}
+      >
         {title}
       </span>
     </div>
