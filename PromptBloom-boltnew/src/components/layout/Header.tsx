@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -11,8 +12,10 @@ const Header = () => {
   const navItems = [
     { name: 'Home', path: '/', icon: <Home size={18} /> },
     { name: 'Prompt Builder', path: '/prompt-builder', icon: <Sparkles size={18} /> },
+    { name: 'Custom Builder', path: '/custom-prompt-builder', icon: <Sparkles size={18} /> },
     { name: 'Templates', path: '/templates', icon: <Bookmark size={18} /> },
     { name: 'Learn', path: '/learn', icon: <BookOpen size={18} /> },
+    { name: 'Community', path: '/community', icon: <User size={18} /> },
   ];
 
   const toggleMenu = () => {
@@ -30,7 +33,7 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <Sparkles className="h-8 w-8 text-primary-500" />
-            <span className="font-heading font-bold text-xl">Prompt Bloom</span>
+            <span className="font-heading font-bold text-xl">PromptHub</span>
           </Link>
 
           {/* Desktop Navigation */}

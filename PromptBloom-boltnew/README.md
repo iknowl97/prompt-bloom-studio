@@ -1,4 +1,5 @@
-# Prompt Bloom Studio
+
+# PromptHub
 
 Modern prompt engineering IDE for AI developers. Built with React + Vite + Tailwind CSS.
 
@@ -9,6 +10,7 @@ Modern prompt engineering IDE for AI developers. Built with React + Vite + Tailw
 - 🎓 Interactive learning modules
 - ⚡ Real-time collaboration
 - 🔍 Advanced analytics
+- 🌐 Community sharing and feedback
 
 ## Tech Stack
 
